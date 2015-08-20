@@ -1,0 +1,6 @@
+tile.teleplate.name=Teleplate
+item.portableteleplate.name=Portable Teleplate
+
+teleplates.gui.confirm=Confirm
+
+teleplates.cannotchange=You cannot change this teleplate settings!
