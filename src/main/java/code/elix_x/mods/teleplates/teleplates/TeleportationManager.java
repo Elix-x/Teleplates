@@ -47,7 +47,7 @@ public class TeleportationManager {
 			} else {
 				block = player.worldObj.getBlock((int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ));
 			}
-			if(player.rotationPitch == 90 && ((block == TeleplatesBase.teleplate && EnergyManager.canTeleportFromTeleplate(player)) || (player.getItemInUse() != null && player.getItemInUse().getItem() == TeleplatesBase.portableTeleplate && EnergyManager.canTeleportFromPortableTeleplate(player)))){
+			if(player.rotationPitch == 90 && ((block == TeleplatesBase.teleplate && EnergyManager.canTeleportFromTeleplate(player)) || (player.isUsingItem() && player.getHeldItem() != null && player.getHeldItem().getItem() == TeleplatesBase.portableTeleplate && EnergyManager.canTeleportFromPortableTeleplate(player)))){
 				if(!isTeleporting(player)){
 					teleportCooldown.put(player, DEFAULTCOOLDOWN);
 				} else if(getCooldown(player) == 0){
