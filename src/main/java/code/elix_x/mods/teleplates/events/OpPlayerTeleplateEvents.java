@@ -25,6 +25,7 @@ public class OpPlayerTeleplateEvents {
 		if(!event.entityLiving.worldObj.isRemote){
 			if(event.entityLiving instanceof EntityPlayer && event.source instanceof EntityDamageSource && event.source.getEntity() instanceof EntityPlayer){
 				if(isSelecting((EntityPlayer) event.source.getEntity())){
+					addOrUpOp((EntityPlayer) event.source.getEntity(), (EntityPlayer) event.entityLiving);
 					event.setCanceled(true);
 				}
 			}
