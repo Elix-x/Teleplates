@@ -20,6 +20,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class BlockTeleplate extends BlockContainer {
@@ -27,7 +28,7 @@ public class BlockTeleplate extends BlockContainer {
 	public BlockTeleplate() {
 		super(Material.iron);
 		setBlockName("teleplate");
-		setBlockBounds(0, 0, 0, 1, /*0.0625f*/ 0, 1);
+		setBlockBounds(0, 0, 0, 1, 0, 1);
 
 		setCreativeTab(CreativeTabs.tabTransport);
 	}
@@ -58,10 +59,10 @@ public class BlockTeleplate extends BlockContainer {
 					}
 					TeleplatesManager.updateUsers();
 					OpPlayerTeleplateEvents.setSelecting(player, false);
-					player.addChatComponentMessage(new ChatComponentText("Succesfully loaded permissions!"));
+					player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("teleplates.permission.success")));
 				} else if(OpPlayerTeleplateEvents.canSelect(player)){
 					OpPlayerTeleplateEvents.setSelecting(player, true);
-					player.addChatComponentMessage(new ChatComponentText("Now go and hit with this stick ones taht you want to op. Then come back!"));
+					player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("teleplates.permissions.stick")));
 				}
 			}
 		}
@@ -73,31 +74,6 @@ public class BlockTeleplate extends BlockContainer {
 		TeleplatesManager.invalidate(((TileEntityTeleplate) world.getTileEntity(x, y, z)).getTeleplateId());
 		super.breakBlock(world, x, y, z, block, meta);
 	}
-
-	/*@Override
-	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List boxes, Entity entity) {
-		TileEntityTeleplate teleplate = (TileEntityTeleplate) world.getTileEntity(x, y, z);
-//		TeleplatesManager.logger.info(teleplate.getTeleplateId());
-		if(entity instanceof EntityPlayer){
-			super.addCollisionBoxesToList(world, x, y, z, mask, boxes, entity);
-		} else {
-			addCollisionBoxesToListt(world, x, y, z, mask, boxes, entity);
-		}
-	}
-
-	private void addCollisionBoxesToListt(World world, int x, int y, int z, AxisAlignedBB mask, List boxes, Entity entity) {
-		AxisAlignedBB axisalignedbb1 = this.getCollisionBoundingBoxFromPooll(world, x, y, z);
-
-        if (axisalignedbb1 != null && mask.intersectsWith(axisalignedbb1))
-        {
-            boxes.add(axisalignedbb1);
-        }
-	}
-
-	public AxisAlignedBB getCollisionBoundingBoxFromPooll(World p_149668_1_, int p_149668_2_, int p_149668_3_, int p_149668_4_)
-    {
-        return AxisAlignedBB.getBoundingBox((double)p_149668_2_, (double)p_149668_3_, (double)p_149668_4_, (double)p_149668_2_ + 1, (double)p_149668_3_ + 1, (double)p_149668_4_ + 1);
-    }*/
 
 	@Override
 	public boolean isOpaqueCube() {

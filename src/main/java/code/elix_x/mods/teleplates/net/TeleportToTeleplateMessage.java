@@ -14,46 +14,33 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class TeleportToTeleplateMessage implements IMessage{
 
-	private UUID player;
-	private int dimId;
 	private int teleplate;
 	
 	public TeleportToTeleplateMessage() {
 		
 	}
 	
-	public TeleportToTeleplateMessage(EntityPlayer player, int dimId, int teleplateId) {
-		this.player = EntityPlayer.func_146094_a(player.getGameProfile());
-		this.dimId = dimId;
+	public TeleportToTeleplateMessage(int teleplateId) {
 		this.teleplate = teleplateId;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		NBTTagCompound nbt = ByteBufUtils.readTag(buf);
-		player = UUID.fromString(nbt.getString("player"));
-		dimId = nbt.getInteger("dimId");
-		teleplate = nbt.getInteger("teleplate");
+		teleplate = buf.readInt();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setString("player", player.toString());
-		nbt.setInteger("dimId", dimId);
-		nbt.setInteger("teleplate", teleplate);
-		ByteBufUtils.writeTag(buf, nbt);
+		buf.writeInt(teleplate);
 	}
 	
 	public static class TeleportToTeleplateMessageHandler implements IMessageHandler<TeleportToTeleplateMessage, IMessage>{
 
 		@Override
 		public IMessage onMessage(TeleportToTeleplateMessage message, MessageContext ctx) {
-			TeleportationManager.teleport(message.player, message.dimId, message.teleplate);
+			TeleportationManager.teleport(ctx.getServerHandler().playerEntity, message.teleplate);
 			return null;
 		}
-		
-		
 		
 	}
 

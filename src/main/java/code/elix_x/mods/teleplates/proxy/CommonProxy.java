@@ -36,7 +36,7 @@ public class CommonProxy {
 		
 	}
 
-	public void displatGuiSelectTeleplate() {
+	public void displayGuiSelectTeleplate() {
 		
 	}
 }

@@ -91,7 +91,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void displatGuiSelectTeleplate() {
+	public void displayGuiSelectTeleplate() {
 		Minecraft.getMinecraft().displayGuiScreen(new GuiSelectTeleplate());
 	}
 

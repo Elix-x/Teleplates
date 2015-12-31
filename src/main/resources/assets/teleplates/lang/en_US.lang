@@ -3,4 +3,9 @@ item.portableteleplate.name=Portable Teleplate
 
 teleplates.gui.confirm=Confirm
 
-teleplates.cannotchange=You cannot change this teleplate settings!
+teleplates.cannotchange=You cannot change this teleplate's settings!
+
+teleplates.permissions.stick=Now go and hit with this stick ones that you want to op. Than come back!
+teleplates.permission.success=Successfully loaded permissions!
+
+teleplates.happyholidays=Happy Holidays!

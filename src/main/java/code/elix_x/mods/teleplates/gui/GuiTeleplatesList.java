@@ -75,14 +75,9 @@ public class GuiTeleplatesList extends GuiListExtended{
 
 		@Override
 		public boolean mousePressed(int x, int y, int id, int p_148278_4_, int p_148278_5_, int p_148278_6_) {
-			//			System.out.println("Pressing!");
-			//			if(teleport.mousePressed(Minecraft.getMinecraft(), x, y)){
-			//				System.out.println("Whoosh!");
-//			TeleportationManager.teleport(EntityPlayer.func_146094_a(Minecraft.getMinecraft().thePlayer.getGameProfile()), Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId, teleplate.getId());
-			TeleplatesBase.net.sendToServer(new TeleportToTeleplateMessage(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId, teleplate.getId()));
+			TeleplatesBase.net.sendToServer(new TeleportToTeleplateMessage(teleplate.getId()));
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();
-			//			}
 			return false;
 		}
 

@@ -37,7 +37,7 @@ public class SynchronizeTeleplatesMessage implements IMessage{
 		public IMessage onMessage(SynchronizeTeleplatesMessage message, MessageContext ctx) {
 			/*TeleplatesManager.reset();
 			TeleplatesManager.readFromNBT(message.nbt);*/
-			SaveSyncManager.onShynchronize(message.nbt);
+			SaveSyncManager.onSynchronize(message.nbt);
 			return null;
 		}
 		
