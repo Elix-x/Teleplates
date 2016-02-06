@@ -3,55 +3,65 @@ package code.elix_x.mods.teleplates.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiListExtended;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.config.Configuration;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
+import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
 import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
-import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 
-public class GuiTeleplatesList extends GuiListExtended{
+public class GuiTeleplatesList extends GuiListExtended {
 
 	private List<Teleplate> teleplates = new ArrayList<Teleplate>();
 
-	public GuiTeleplatesList(GuiSelectTeleplate gui) {
+	public GuiTeleplatesList(GuiSelectTeleplate gui){
 		super(Minecraft.getMinecraft(), gui.width, gui.height, 0, gui.height, 20);
 
 		TeleplatesManager manager = TeleplatesSavedData.getClient().getTeleplatesManager();
-		for(int id : manager.getTeleplates(Minecraft.getMinecraft().thePlayer)){
-			if(manager.isValid(id)){
-				teleplates.add(manager.getTeleplate(id));
+		for(Teleplate teleplate : manager.getAllTeleplates()){
+			if(manager.isValid(teleplate.getId())){
+				if(teleplate.getMode() == EnumTeleplateMode.PUBLIC){
+					teleplates.add(teleplate);
+				} else if(teleplate.getMode() == EnumTeleplateMode.PROTECTED){
+					if(teleplate.getPassword() != null){
+						teleplates.add(teleplate);
+					} else {
+						if(teleplate.isWhitelist() == teleplate.getList().contains(EntityPlayer.func_146094_a(Minecraft.getMinecraft().thePlayer.getGameProfile()))){
+							teleplates.add(teleplate);
+						}
+					}
+				} else if(teleplate.getMode() == EnumTeleplateMode.PRIVATE){
+					if(teleplate.getOwner().equals(EntityPlayer.func_146094_a(Minecraft.getMinecraft().thePlayer.getGameProfile()))){
+						teleplates.add(teleplate);
+					}
+				}
 			}
 		}
 	}
 
 	@Override
-	public IGuiListEntry getListEntry(int i) {
+	public IGuiListEntry getListEntry(int i){
 		return new TeleplateEntry(i);
 	}
 
 	@Override
-	protected int getSize() {
+	protected int getSize(){
 		return teleplates.size();
 	}
 
-	public class TeleplateEntry implements IGuiListEntry{
+	public class TeleplateEntry implements IGuiListEntry {
 
 		private Teleplate teleplate;
 		private GuiButton teleport;
 
-		public TeleplateEntry(int i) {
-			//			teleplate = TeleplatesManager.getTeleplates(Minecraft.getMinecraft().thePlayer).
+		public TeleplateEntry(int i){
 			teleplate = teleplates.get(i);
 			String s = teleplate.getName();
 			boolean b = ConfigurationManager.forceDisplayCoordinatesInGui;
@@ -69,14 +79,14 @@ public class GuiTeleplatesList extends GuiListExtended{
 		}
 
 		@Override
-		public void drawEntry(int slotId, int x, int y, int width, int height, Tessellator tessellator, int p_148279_7_, int p_148279_8_, boolean p_148279_9_) {
+		public void drawEntry(int slotId, int x, int y, int width, int height, Tessellator tessellator, int p_148279_7_, int p_148279_8_, boolean p_148279_9_){
 			teleport.xPosition = x + 64;
 			teleport.yPosition = y + 1;
 			teleport.drawButton(Minecraft.getMinecraft(), p_148279_7_, p_148279_8_);
 		}
 
 		@Override
-		public boolean mousePressed(int x, int y, int id, int p_148278_4_, int p_148278_5_, int p_148278_6_) {
+		public boolean mousePressed(int x, int y, int id, int p_148278_4_, int p_148278_5_, int p_148278_6_){
 			TeleplatesBase.net.sendToServer(new TeleportToTeleplateMessage(teleplate.getId()));
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();
@@ -84,7 +94,7 @@ public class GuiTeleplatesList extends GuiListExtended{
 		}
 
 		@Override
-		public void mouseReleased(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_) {
+		public void mouseReleased(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_){
 
 		}
 

@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
@@ -20,7 +17,6 @@ public class TeleplatesManager {
 
 	private TeleplatesSavedData savedData;
 
-	private Multimap<UUID, Integer> playerIdsMap = HashMultimap.create();
 	private Map<Integer, Teleplate> idTeleplateMap = new HashMap<Integer, Teleplate>();
 	private Map<Integer, Boolean> idValidityMap = new HashMap<Integer, Boolean>();
 
@@ -33,23 +29,18 @@ public class TeleplatesManager {
 	public int createTeleplate(EntityPlayer player, String name, DimBlockPos pos){
 		int id = getNextFreeTeleplateId();
 		Teleplate teleplate = new Teleplate(id, name, pos, EntityPlayer.func_146094_a(player.getGameProfile()));	
-		playerIdsMap.put(EntityPlayer.func_146094_a(player.getGameProfile()), id);	
 		idTeleplateMap.put(id, teleplate);
 		idValidityMap.put(id, true);
 		savedData.synchronizeWithAll();
 		return id;
 	}
 
+	public Collection<Teleplate> getAllTeleplates(){
+		return idTeleplateMap.values();
+	}
+
 	public Teleplate getTeleplate(int id){
 		return idTeleplateMap.get(id);
-	}
-
-	public Collection<Integer> getTeleplates(UUID playerId){
-		return playerIdsMap.get(playerId);
-	}
-
-	public Collection<Integer> getTeleplates(EntityPlayer player){
-		return getTeleplates(EntityPlayer.func_146094_a(player.getGameProfile()));
 	}
 
 	public int getNextFreeTeleplateId(){
@@ -63,10 +54,10 @@ public class TeleplatesManager {
 	}
 
 	public void tryChangeName(UUID caller, int teleplate, String newName){
-		//		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
-		getTeleplate(teleplate).setName(newName);
-		savedData.synchronizeWithAll();
-		//		}
+		if(getTeleplate(teleplate).getOwner().equals(caller)){
+			getTeleplate(teleplate).setName(newName);
+			savedData.synchronizeWithAll();
+		}
 	}
 
 	public  void updateTeleplatePosition(TileEntityTeleplate te){
@@ -82,15 +73,6 @@ public class TeleplatesManager {
 
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		nbt.setInteger("nextFreeId", nextFreeId);
-		NBTTagList list = new NBTTagList();
-		for(Entry<UUID, Integer> entry : playerIdsMap.entries()){
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setString("player", entry.getKey().toString());
-			tag.setInteger("teleplate", entry.getValue());
-			list.appendTag(tag);
-		}
-		nbt.setTag("playerTeleplatesMap", list);
-
 		NBTTagList llist = new NBTTagList();
 		for(Teleplate teleplate : idTeleplateMap.values()){
 			llist.appendTag(teleplate.writeToNBT(new NBTTagCompound()));
@@ -110,12 +92,6 @@ public class TeleplatesManager {
 
 	public void readFromNBT(NBTTagCompound nbt){		
 		nextFreeId = nbt.getInteger("nextFreeId");
-		NBTTagList list = (NBTTagList) nbt.getTag("playerTeleplatesMap");
-		for(int i = 0; i < list.tagCount(); i++){
-			NBTTagCompound tag = list.getCompoundTagAt(i);
-			playerIdsMap.put(UUID.fromString(tag.getString("player")), tag.getInteger("teleplate"));
-		}
-
 		NBTTagList llist = (NBTTagList) nbt.getTag("idTeleplateMap");
 		for(int i = 0; i < llist.tagCount(); i++){
 			NBTTagCompound tag = llist.getCompoundTagAt(i);

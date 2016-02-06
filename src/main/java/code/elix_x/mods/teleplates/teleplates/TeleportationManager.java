@@ -2,20 +2,14 @@ package code.elix_x.mods.teleplates.teleplates;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.config.ConfigurationManager;
-import code.elix_x.mods.teleplates.consomation.ConsomationManager;
-import code.elix_x.mods.teleplates.consomation.energy.EnergyConsomationManager;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 
 public class TeleportationManager {
 
@@ -63,17 +57,15 @@ public class TeleportationManager {
 	}
 
 	public static void teleport(EntityPlayer player, int teleplateId) {
-		if(TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplates(player).contains(teleplateId)){
-			if(player != null){
-				TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
-				Teleplate teleplate = TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplate(teleplateId);
-				if(player.worldObj.provider.dimensionId != teleplate.getPos().getDimId()){
-					player.travelToDimension(teleplate.getPos().getDimId());
-				}
-				player.rotationPitch = -90;
-				player.setPositionAndUpdate(teleplate.getPos().getX() + 0.5, teleplate.getPos().getY(), teleplate.getPos().getZ() + 0.5);
-				player.rotationPitch = -90;
+		if(player != null){
+			TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
+			Teleplate teleplate = TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplate(teleplateId);
+			if(player.worldObj.provider.dimensionId != teleplate.getPos().getDimId()){
+				player.travelToDimension(teleplate.getPos().getDimId());
 			}
+			player.rotationPitch = -90;
+			player.setPositionAndUpdate(teleplate.getPos().getX() + 0.5, teleplate.getPos().getY(), teleplate.getPos().getZ() + 0.5);
+			player.rotationPitch = -90;
 		}
 	}
 }
