@@ -1,5 +1,6 @@
 package code.elix_x.mods.teleplates.proxy;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.blocks.BlockTeleplate;
@@ -32,7 +33,7 @@ public class CommonProxy {
 
 	}
 	
-	public void displayGuiSetTeleplateName(DimBlockPos pos){
+	public void displayGuiSetTeleplateName(EntityPlayer player, DimBlockPos pos){
 		
 	}
 

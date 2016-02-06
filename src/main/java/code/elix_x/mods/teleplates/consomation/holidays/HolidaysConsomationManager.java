@@ -3,7 +3,6 @@ package code.elix_x.mods.teleplates.consomation.holidays;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import code.elix_x.mods.teleplates.consomation.IConsomationManager;
@@ -15,8 +14,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.Configuration;
 
 public class HolidaysConsomationManager implements IConsomationManager {
-
-	public static final HolidaysConsomationManager INSTANCE = new HolidaysConsomationManager();
 
 	public static Calendar calendar = Calendar.getInstance();
 
@@ -39,8 +36,12 @@ public class HolidaysConsomationManager implements IConsomationManager {
 		holidays.add(new Date(120, 3, 19));
 	}
 
+	public HolidaysConsomationManager(){
+
+	}
+
 	@Override
-	public boolean canTeleportFromTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromTeleplate(EntityPlayer player){
 		for(Date date : holidays){
 			if(calendar.getTime().getMonth() == date.getMonth() && calendar.getTime().getDate() == date.getDate() && (date.getYear() == 0 || calendar.getTime().getYear() == date.getYear())) return true;
 		}
@@ -48,7 +49,7 @@ public class HolidaysConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player){
 		for(Date date : holidays){
 			if(calendar.getTime().getMonth() == date.getMonth() && calendar.getTime().getDate() == date.getDate() && (date.getYear() == 0 || calendar.getTime().getYear() == date.getYear())) return true;
 		}
@@ -56,38 +57,23 @@ public class HolidaysConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void onTransfer(EntityPlayer player) {
+	public void onTransfer(EntityPlayer player){
 		player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.BOLD + "" + EnumChatFormatting.YELLOW + StatCollector.translateToLocal("teleplates.happyholidays")));
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		return nbt;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(NBTTagCompound nbt){
 
 	}
 
 	@Override
-	public void reset() {
-
-	}
-
-	@Override
-	public String getName() {
+	public String getName(){
 		return "HOLIDAYS";
-	}
-
-	@Override
-	public void config(Configuration config) {
-
-	}
-
-	@Override
-	public void deactivate() {
-
 	}
 
 }

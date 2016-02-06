@@ -3,13 +3,14 @@ package code.elix_x.mods.teleplates.tileentities;
 import java.util.UUID;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
-import code.elix_x.mods.teleplates.TeleplatesBase;
+import code.elix_x.mods.teleplates.consomation.ConsomationManager;
+import code.elix_x.mods.teleplates.consomation.IConsomationManager;
 import code.elix_x.mods.teleplates.consomation.energy.EnergyConsomationManager;
 import code.elix_x.mods.teleplates.consomation.fluid.FluidConsomationManager;
 import code.elix_x.mods.teleplates.consomation.fluid.FluidStorage;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaConsomationManager;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaStorage;
-import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.Loader;
@@ -37,20 +38,22 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	private UUID owner;
 	private int teleplate;
 
-	public EnergyStorage energyStorage = EnergyConsomationManager.INSTANCE.getDefaultStorage();
-	public FluidStorage fluidStorage = FluidConsomationManager.INSTANCE.getDefaultStorage();
+	public EnergyStorage energyStorage;
+	public FluidStorage fluidStorage;
 
 	private Object essentiaStorage;
 	public int essentiaSuction = 120;
 
-	public TileEntityTeleplate() {
-			if(Loader.isModLoaded("Thaumcraft")) essentiaStorage = EssentiaConsomationManager.INSTANCE.getDefaultStorage();
+	public TileEntityTeleplate(){
+		energyStorage = EnergyConsomationManager.getDefaultStorage();
+		fluidStorage = FluidConsomationManager.getDefaultStorage();
+		if(Loader.isModLoaded("Thaumcraft")) essentiaStorage = EssentiaConsomationManager.getDefaultStorage();
 	}
 
 	public void init(EntityPlayer player, String name){
 		if(!worldObj.isRemote){
 			owner = EntityPlayer.func_146094_a(player.getGameProfile());
-			teleplate = TeleplatesManager.createTeleplate(player, name, new DimBlockPos(this));
+			teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
 			markDirty();
 		} else {
 			owner = EntityPlayer.func_146094_a(player.getGameProfile());
@@ -59,15 +62,17 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Override
-	public void setWorldObj(World world) {
+	public void setWorldObj(World world){
 		super.setWorldObj(world);
+		TeleplatesSavedData data = TeleplatesSavedData.get(world);		
+
 		if(owner != null){
-			TeleplatesManager.validate(teleplate);
-			TeleplatesManager.updateTeleplatePosition(this);
+			data.getTeleplatesManager().validate(teleplate);
+			data.getTeleplatesManager().updateTeleplatePosition(this);
 		}
 	}
 
-	public int getTeleplateId() {
+	public int getTeleplateId(){
 		return teleplate;
 	}
 
@@ -76,7 +81,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public void writeToNBT(NBTTagCompound nbt){
 		super.writeToNBT(nbt);
 		nbt.setString("owner", owner.toString());
 		nbt.setInteger("teleplate", teleplate);
@@ -86,7 +91,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(NBTTagCompound nbt){
 		super.readFromNBT(nbt);
 		owner = UUID.fromString(nbt.getString("owner"));
 		teleplate = nbt.getInteger("teleplate");
@@ -96,164 +101,199 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Override
-	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
+	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z){
 		boolean b = super.shouldRefresh(oldBlock, newBlock, oldMeta, newMeta, world, x, y, z);
 		if(b){
-			TeleplatesManager.invalidate(teleplate);
+			TeleplatesSavedData.get(worldObj).getTeleplatesManager().invalidate(teleplate);
 		}
 		return b;
 	}
-	
+
 	@Override
-	public void updateEntity() {
+	public void updateEntity(){
 		if(Loader.isModLoaded("Thaumcraft")) thaumUpdate();
+	}
+
+	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
+		return TeleplatesSavedData.get(worldObj).getConsomationManager().isManagerActive(clas);
+	}
+
+	public <T extends IConsomationManager> T getActiveConsomationManager(Class<T> clas){
+		return TeleplatesSavedData.get(worldObj).getConsomationManager().getActiveConsomationManager(clas);
 	}
 
 	/*
 	 * Energy
 	 */
 
-	@Override
-	public boolean canConnectEnergy(ForgeDirection from) {
-		return EnergyConsomationManager.INSTANCE.canConnectEnergy(this, from);
+	public boolean isEnergyConsomationManagerActive(){
+		return isConsomationManagerActive(EnergyConsomationManager.class);
+	}
+
+	public EnergyConsomationManager getActiveEnergyConsomationManager(){
+		return getActiveConsomationManager(EnergyConsomationManager.class);
 	}
 
 	@Override
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		return EnergyConsomationManager.INSTANCE.receiveEnergy(this, from, maxReceive, simulate);
+	public boolean canConnectEnergy(ForgeDirection from){
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().canConnectEnergy(this, from) : false;
 	}
 
 	@Override
-	public int getEnergyStored(ForgeDirection from) {
-		return EnergyConsomationManager.INSTANCE.getEnergyStored(this, from);
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate){
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().receiveEnergy(this, from, maxReceive, simulate) : 0;
 	}
 
 	@Override
-	public int getMaxEnergyStored(ForgeDirection from) {
-		return EnergyConsomationManager.INSTANCE.getMaxEnergyStored(this, from);
+	public int getEnergyStored(ForgeDirection from){
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().getEnergyStored(this, from) : 0;
+	}
+
+	@Override
+	public int getMaxEnergyStored(ForgeDirection from){
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().getMaxEnergyStored(this, from) : 0;
 	}
 
 	/*
 	 * Fluid
 	 */
 
-	@Override
-	public boolean canFill(ForgeDirection from, Fluid fluid) {
-		return FluidConsomationManager.INSTANCE.canFill(this, from, fluid);
+	public boolean isFluidConsomationManagerActive(){
+		return isConsomationManagerActive(FluidConsomationManager.class);
+	}
+
+	public FluidConsomationManager getActiveFluidConsomationManager(){
+		return getActiveConsomationManager(FluidConsomationManager.class);
 	}
 
 	@Override
-	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-		return FluidConsomationManager.INSTANCE.canDrain(this, from, fluid);
+	public boolean canFill(ForgeDirection from, Fluid fluid){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().canFill(this, from, fluid) : false;
 	}
 
 	@Override
-	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-		return FluidConsomationManager.INSTANCE.getTankInfo(this, from);
-	}
-	@Override
-	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		return FluidConsomationManager.INSTANCE.fill(this, from, resource, doFill);
+	public boolean canDrain(ForgeDirection from, Fluid fluid){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().canDrain(this, from, fluid) : false;
 	}
 
 	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-		return FluidConsomationManager.INSTANCE.drain(this, from, resource, doDrain);
+	public FluidTankInfo[] getTankInfo(ForgeDirection from){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().getTankInfo(this, from) : new FluidTankInfo[]{};
 	}
 
 	@Override
-	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-		return FluidConsomationManager.INSTANCE.drain(this, from, maxDrain, doDrain);
+	public int fill(ForgeDirection from, FluidStack resource, boolean doFill){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().fill(this, from, resource, doFill) : 0;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().drain(this, from, resource, doDrain) : null;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain){
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().drain(this, from, maxDrain, doDrain) : null;
 	}
 
 	/*
 	 * Essentia
 	 */
-	
+
+	@Method(modid = "Thaumcraft")
+	public boolean isEssentiaConsomationManagerActive(){
+		return isConsomationManagerActive(EssentiaConsomationManager.class);
+	}
+
+	@Method(modid = "Thaumcraft")
+	public EssentiaConsomationManager getActiveEssentiaConsomationManager(){
+		return getActiveConsomationManager(EssentiaConsomationManager.class);
+	}
+
 	@Method(modid = "Thaumcraft")
 	public EssentiaStorage getEssentiaStorage(){
 		return (EssentiaStorage) essentiaStorage;
 	}
 
 	@Method(modid = "Thaumcraft")
-	private void thaumUpdate() {
-		EssentiaConsomationManager.INSTANCE.thaumUpdate(this);
+	private void thaumUpdate(){
+		if(isEssentiaConsomationManagerActive()) getActiveEssentiaConsomationManager().thaumUpdate(this);
 	}
-	
+
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean isConnectable(ForgeDirection side) {
+	public boolean isConnectable(ForgeDirection side){
 		return side == ForgeDirection.DOWN;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean canInputFrom(ForgeDirection side) {
+	public boolean canInputFrom(ForgeDirection side){
 		return side == ForgeDirection.DOWN;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean canOutputTo(ForgeDirection side) {
+	public boolean canOutputTo(ForgeDirection side){
 		return false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public Aspect getSuctionType(ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.getSuctionType(this, side);
-	}
-	
-	@Method(modid = "Thaumcraft")
-	@Override
-	public int getSuctionAmount(ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.getSuctionAmount(this, side);
-	}
-	
-	@Method(modid = "Thaumcraft")
-	@Override
-	public void setSuction(Aspect aspect, int suction) {
-		EssentiaConsomationManager.INSTANCE.setSuction(this, aspect, suction);
+	public Aspect getSuctionType(ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().getSuctionType(this, side) : null;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int takeEssentia(Aspect aspect, int amount, ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.takeEssentia(this, aspect, amount, side);
+	public int getSuctionAmount(ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().getSuctionAmount(this, side) : 0;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int addEssentia(Aspect aspect, int amount, ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.addEssentia(this, aspect, amount, side);
+	public void setSuction(Aspect aspect, int suction){
+		if(isEssentiaConsomationManagerActive()) getActiveEssentiaConsomationManager().setSuction(this, aspect, suction);
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public Aspect getEssentiaType(ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.getEssentiaType(this, side);
+	public int takeEssentia(Aspect aspect, int amount, ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().takeEssentia(this, aspect, amount, side) : 0;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int getEssentiaAmount(ForgeDirection side) {
-		return EssentiaConsomationManager.INSTANCE.getEssentiaAmount(this, side);
+	public int addEssentia(Aspect aspect, int amount, ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().addEssentia(this, aspect, amount, side) : 0;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int getMinimumSuction() {
+	public Aspect getEssentiaType(ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().getEssentiaType(this, side) : null;
+	}
+
+	@Method(modid = "Thaumcraft")
+	@Override
+	public int getEssentiaAmount(ForgeDirection side){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().getEssentiaAmount(this, side) : 0;
+	}
+
+	@Method(modid = "Thaumcraft")
+	@Override
+	public int getMinimumSuction(){
 		return 0;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean renderExtendedTube() {
+	public boolean renderExtendedTube(){
 		return false;
 	}
-	
+
 	@Method(modid = "Thaumcraft")
-	private void writeEssentiaStorageToNBT(NBTTagCompound nbt) {
+	private void writeEssentiaStorageToNBT(NBTTagCompound nbt){
 		NBTTagCompound tag = new NBTTagCompound();
 		getEssentiaStorage().writeToNBT(tag);
 		tag.setInteger("suction", essentiaSuction);
@@ -261,68 +301,68 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Method(modid = "Thaumcraft")
-	private void readEssentiaStorageFromNBT(NBTTagCompound nbt) {
+	private void readEssentiaStorageFromNBT(NBTTagCompound nbt){
 		NBTTagCompound tag = nbt.getCompoundTag("essentia");
 		getEssentiaStorage().readFromNBT(tag);
 		essentiaSuction = tag.getInteger("suction");
 	}
-	
+
 	/*
 	 * Aspects
 	 */
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public AspectList getAspects() {
-		return EssentiaConsomationManager.INSTANCE.getAspects(this);
+	public AspectList getAspects(){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().getAspects(this) : new AspectList();
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public void setAspects(AspectList aspects) {
-		EssentiaConsomationManager.INSTANCE.setAspects(this, aspects);
+	public void setAspects(AspectList aspects){
+		if(isEssentiaConsomationManagerActive()) getActiveEssentiaConsomationManager().setAspects(this, aspects);
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean doesContainerAccept(Aspect aspect) {
-		return EssentiaConsomationManager.INSTANCE.doesContainerAccept(this, aspect);
+	public boolean doesContainerAccept(Aspect aspect){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().doesContainerAccept(this, aspect) : false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int addToContainer(Aspect aspect, int amount) {
-		return EssentiaConsomationManager.INSTANCE.addToContainer(this, aspect, amount);
+	public int addToContainer(Aspect aspect, int amount){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().addToContainer(this, aspect, amount) : amount;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean takeFromContainer(Aspect aspect, int amount) {
-		return EssentiaConsomationManager.INSTANCE.takeFromContainer(this, aspect, amount);
+	public boolean takeFromContainer(Aspect aspect, int amount){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().takeFromContainer(this, aspect, amount) : false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean takeFromContainer(AspectList aspects) {
-		return EssentiaConsomationManager.INSTANCE.takeFromContainer(this, aspects);
+	public boolean takeFromContainer(AspectList aspects){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().takeFromContainer(this, aspects) : false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean doesContainerContainAmount(Aspect aspect, int amount) {
-		return EssentiaConsomationManager.INSTANCE.doesContainerContainAmount(this, aspect, amount);
+	public boolean doesContainerContainAmount(Aspect aspect, int amount){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().doesContainerContainAmount(this, aspect, amount) : false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public boolean doesContainerContain(AspectList aspects) {
-		return EssentiaConsomationManager.INSTANCE.doesContainerContain(this, aspects);
+	public boolean doesContainerContain(AspectList aspects){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().doesContainerContain(this, aspects) : false;
 	}
 
 	@Method(modid = "Thaumcraft")
 	@Override
-	public int containerContains(Aspect aspect) {
-		return EssentiaConsomationManager.INSTANCE.containerContains(this, aspect);
+	public int containerContains(Aspect aspect){
+		return isEssentiaConsomationManagerActive() ? getActiveEssentiaConsomationManager().containerContains(this, aspect) : 0;
 	}
 
 }

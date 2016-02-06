@@ -15,6 +15,7 @@ import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
@@ -26,9 +27,10 @@ public class GuiTeleplatesList extends GuiListExtended{
 	public GuiTeleplatesList(GuiSelectTeleplate gui) {
 		super(Minecraft.getMinecraft(), gui.width, gui.height, 0, gui.height, 20);
 
-		for(int id : TeleplatesManager.getTeleplates(Minecraft.getMinecraft().thePlayer)){
-			if(/*!TeleplatesManager.getTeleplate(id).getName().equals("Teleplate") &&*/TeleplatesManager.isValid(id)){
-				teleplates.add(TeleplatesManager.getTeleplate(id));
+		TeleplatesManager manager = TeleplatesSavedData.getClient().getTeleplatesManager();
+		for(int id : manager.getTeleplates(Minecraft.getMinecraft().thePlayer)){
+			if(manager.isValid(id)){
+				teleplates.add(manager.getTeleplate(id));
 			}
 		}
 	}

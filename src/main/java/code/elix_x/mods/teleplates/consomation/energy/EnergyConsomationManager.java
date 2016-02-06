@@ -11,16 +11,14 @@ import org.apache.logging.log4j.Logger;
 import code.elix_x.excore.utils.pos.BlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.consomation.IConsomationManager;
-import code.elix_x.mods.teleplates.consomation.fluid.FluidConsomationManager;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
-import code.elix_x.mods.teleplates.net.SaveSyncManager;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cofh.api.energy.EnergyStorage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -28,15 +26,17 @@ public class EnergyConsomationManager implements IConsomationManager {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Energy Consomation Manager");
 
-	public static final EnergyConsomationManager INSTANCE = new EnergyConsomationManager();
-
-	public int rfUsageType = 0;
-	public int rfPerTransfer = 25000;
-	public int rfStorage = 250000;
+	public static int rfUsageType = 1;
+	public static int rfPerTransfer = 25000;
+	public static int rfStorage = 250000;
 
 	private Map<UUID, EnergyStorage> storages = new HashMap<UUID, EnergyStorage>();
-
-	public EnergyStorage getDefaultStorage() {
+	
+	public EnergyConsomationManager(){
+		
+	}
+	
+	public static EnergyStorage getDefaultStorage() {
 		return new EnergyStorage(rfStorage);
 	}
 
@@ -64,7 +64,7 @@ public class EnergyConsomationManager implements IConsomationManager {
 
 		case 1:
 			int i = getEnergyStorage(teleplate.getOwner()).receiveEnergy(maxReceive, simulate);
-			if(i > 0) SaveSyncManager.synchronizeWithAll();
+//			if(i > 0) TeleplatesSavedData.synchronizeWithAll();
 			return i;
 
 		case 2:
@@ -238,7 +238,7 @@ public class EnergyConsomationManager implements IConsomationManager {
 	}
 
 	public void readFromNBT(NBTTagCompound nbt){
-		reset();
+		storages.clear();
 
 		NBTTagList list = (NBTTagList) nbt.getTag("energy");
 		for(int i = 0; i < list.tagCount(); i++){
@@ -248,25 +248,14 @@ public class EnergyConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void reset() {
-		storages.clear();
-	}
-
-	@Override
-	public String getName() {
+	public String getName(){
 		return "ENERGY-RF";
 	}
 
-	@Override
-	public void config(Configuration config) {
+	public static void config(Configuration config){
 		rfUsageType = config.getInt("consomationType", "CONSOMATION-ENERGY-RF", 1, 0, 2, "Type of rf usage:\n0=No Rf Usage.\n1=Rf is stored per player in 5th dimension and used from there.\n2=Rf is stored per teleplate and when transfering double the transfer amount will be consumed from sending teleplate.");
 		rfPerTransfer = config.getInt("RfPerTransfer", "CONSOMATION-ENERGY-RF", 25000, 0, Integer.MAX_VALUE, "Amount of rf teleplate will consume to transfer player to/from 5th dimension.");
 		rfStorage = config.getInt("RfStorage", "CONSOMATION-ENERGY-RF", rfPerTransfer * 10, rfPerTransfer * 2, Integer.MAX_VALUE, "Amount of rf stored in 5th dimensdion or teleplate (depends on rfUsageType) used to power teleplates.");
-	}
-
-	@Override
-	public void deactivate() {
-		rfUsageType = 0;
 	}
 
 }

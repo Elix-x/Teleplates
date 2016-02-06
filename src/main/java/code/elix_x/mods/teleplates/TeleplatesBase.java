@@ -12,7 +12,6 @@ import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
 import code.elix_x.mods.teleplates.events.OpPlayerTeleplateEvents;
 import code.elix_x.mods.teleplates.events.SaveLoadEvent;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
-import code.elix_x.mods.teleplates.net.SaveSyncManager;
 import code.elix_x.mods.teleplates.net.SetTeleplateNameMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
@@ -26,7 +25,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -35,12 +33,12 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptableSaveVersions = "[1.0,1.1]")
+@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptableSaveVersions = "[1.1,1.2]")
 public class TeleplatesBase {
 
 	public static final String MODID = "teleplates";
 	public static final String NAME = "Teleplates";
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "1.2";
 
 	public static final Logger logger = LogManager.getLogger(NAME);
 
@@ -95,8 +93,4 @@ public class TeleplatesBase {
 		proxy.postInit(event);
 	}
 
-	@EventHandler
-	public void onServerStopped(FMLServerStoppedEvent event){
-		SaveSyncManager.onServerStopped(event);
-	}
 }

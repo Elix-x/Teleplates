@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
-import code.elix_x.mods.teleplates.net.SaveSyncManager;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,35 +24,41 @@ public class TeleplatesManager {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Manager");
 
-	private static Multimap<UUID, Integer> playerIdsMap = HashMultimap.create();
-	private static Map<Integer, Teleplate> idTeleplateMap = new HashMap<Integer, Teleplate>();
-	private static Map<Integer, Boolean> idValidityMap = new HashMap<Integer, Boolean>();
+	private TeleplatesSavedData savedData;
+	
+	private Multimap<UUID, Integer> playerIdsMap = HashMultimap.create();
+	private Map<Integer, Teleplate> idTeleplateMap = new HashMap<Integer, Teleplate>();
+	private Map<Integer, Boolean> idValidityMap = new HashMap<Integer, Boolean>();
 
-	private static int nextFreeId = 0;
+	private int nextFreeId = 0;
 
-	public static int createTeleplate(EntityPlayer player, String name, DimBlockPos pos){
+	public TeleplatesManager(TeleplatesSavedData savedData) {
+		this.savedData = savedData;
+	}
+
+	public int createTeleplate(EntityPlayer player, String name, DimBlockPos pos){
 		int id = getNextFreeTeleplateId();
 		Teleplate teleplate = new Teleplate(id, name, pos, EntityPlayer.func_146094_a(player.getGameProfile()));	
 		playerIdsMap.put(EntityPlayer.func_146094_a(player.getGameProfile()), id);	
 		idTeleplateMap.put(id, teleplate);
 		idValidityMap.put(id, true);
-		SaveSyncManager.synchronizeWithAll();
+		savedData.synchronizeWithAll();
 		return id;
 	}
 
-	public static Teleplate getTeleplate(int id){
+	public Teleplate getTeleplate(int id){
 		return idTeleplateMap.get(id);
 	}
 
-	public static Collection<Integer> getTeleplates(UUID playerId){
+	public Collection<Integer> getTeleplates(UUID playerId){
 		return playerIdsMap.get(playerId);
 	}
 
-	public static Collection<Integer> getTeleplates(EntityPlayer player){
+	public Collection<Integer> getTeleplates(EntityPlayer player){
 		return getTeleplates(EntityPlayer.func_146094_a(player.getGameProfile()));
 	}
 
-	public static int getNextFreeTeleplateId(){
+	public int getNextFreeTeleplateId(){
 		while(true){
 			nextFreeId++;
 			int uuid = nextFreeId;
@@ -62,49 +68,49 @@ public class TeleplatesManager {
 		}
 	}
 	
-	public static boolean isUser(int teleplate, EntityPlayer player) {
+	public boolean isUser(int teleplate, EntityPlayer player) {
 		return isUser(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
 	}
 
-	public static boolean isUser(int teleplate, UUID player) {
+	public boolean isUser(int teleplate, UUID player) {
 		return idTeleplateMap.get(teleplate).isUser(player);
 	}
-
-	public static boolean isModerator(int teleplate, EntityPlayer player) {
+	
+	public boolean isModerator(int teleplate, EntityPlayer player) {
 		return isModerator(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
 	}
 
-	public static boolean isModerator(int teleplate, UUID player) {
+	public boolean isModerator(int teleplate, UUID player) {
 		return idTeleplateMap.get(teleplate).isModerator(player);
 	}
 	
-	public static boolean isAdmin(int teleplate, EntityPlayer player) {
+	public boolean isAdmin(int teleplate, EntityPlayer player) {
 		return isAdmin(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
 	}
 
-	public static boolean isAdmin(int teleplate, UUID player) {
+	public boolean isAdmin(int teleplate, UUID player) {
 		return idTeleplateMap.get(teleplate).isAdmin(player);
 	}
 
-	public static void tryChangeName(UUID caller, int teleplate, String newName) {
+	public void tryChangeName(UUID caller, int teleplate, String newName) {
 		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
 			getTeleplate(teleplate).setName(newName);
-			SaveSyncManager.synchronizeWithAll();
+			savedData.synchronizeWithAll();
 		}
 	}
 
-	public static void updateTeleplatePosition(TileEntityTeleplate te){
+	public  void updateTeleplatePosition(TileEntityTeleplate te){
 		Teleplate teleplate = getTeleplate(te.getTeleplateId());
 		if(teleplate != null){
 			DimBlockPos pos = new DimBlockPos(te);
 			if(!teleplate.getPos().equals(pos)){
 				teleplate.setPos(pos);
-				SaveSyncManager.synchronizeWithAll();
+				savedData.synchronizeWithAll();
 			}
 		}
 	}
 	
-	public static void updateUsers(){
+	public void updateUsers(){
 		for(Teleplate teleplate : idTeleplateMap.values()){
 			for(UUID uuid : playerIdsMap.keySet()){
 				if(teleplate.isUser(uuid)){
@@ -116,7 +122,7 @@ public class TeleplatesManager {
 		}
 	}
 
-	public static NBTTagCompound writeToNBT(NBTTagCompound nbt){
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		nbt.setInteger("nextFreeId", nextFreeId);
 		NBTTagList list = new NBTTagList();
 		for(Entry<UUID, Integer> entry : playerIdsMap.entries()){
@@ -144,9 +150,7 @@ public class TeleplatesManager {
 		return nbt;
 	}
 
-	public static void readFromNBT(NBTTagCompound nbt){
-		reset();
-		
+	public void readFromNBT(NBTTagCompound nbt){		
 		nextFreeId = nbt.getInteger("nextFreeId");
 		NBTTagList list = (NBTTagList) nbt.getTag("playerTeleplatesMap");
 		for(int i = 0; i < list.tagCount(); i++){
@@ -167,27 +171,21 @@ public class TeleplatesManager {
 		}
 	}
 
-	public static void reset() {
-		nextFreeId = 0;
-		playerIdsMap.clear();
-		idTeleplateMap.clear();
-	}
-
-	public static void invalidate(int teleplate) {
+	public void invalidate(int teleplate) {
 		idValidityMap.put(teleplate, false);
-		SaveSyncManager.synchronizeWithAll();
+		savedData.synchronizeWithAll();
 	}
 	
-	public static void validate(int teleplate){
+	public void validate(int teleplate){
 		idValidityMap.put(teleplate, true);
-		SaveSyncManager.synchronizeWithAll();
+		savedData.synchronizeWithAll();
 	}
 
-	public static boolean isValid(int teleplate) {
+	public boolean isValid(int teleplate) {
 		return idValidityMap.get(teleplate);
 	}
 
-	public static void logDebugInfo() {
+	public void logDebugInfo() {
 		logger.debug("Next free Id: " + nextFreeId);
 		logger.debug("Player ids: " + playerIdsMap);
 		logger.debug("Id teleplate: " + idTeleplateMap);

@@ -32,21 +32,19 @@ import net.minecraftforge.fluids.FluidTankInfo;
 public class FluidConsomationManager implements IConsomationManager {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Fluid Consomation Manager");
-	
-	public static final FluidConsomationManager INSTANCE = new FluidConsomationManager();
-	
-	private FluidConsomationManager() {
+		
+	public FluidConsomationManager(){
 		
 	}
 
-	public int fluidConsomationType = 0;
-	public int mbPerTransfer = 10000;
-	public int mbStorage = 100000;
-	public Fluid fluidToConsume;
+	public static int fluidConsomationType = 0;
+	public static int mbPerTransfer = 10000;
+	public static int mbStorage = 100000;
+	public static Fluid fluidToConsume;
 
 	private Map<UUID, FluidStorage> storages = new HashMap<UUID, FluidStorage>();
 
-	public FluidStorage getDefaultStorage(){
+	public static FluidStorage getDefaultStorage(){
 		return new FluidStorage(fluidToConsume, mbStorage);
 	}
 
@@ -67,15 +65,15 @@ public class FluidConsomationManager implements IConsomationManager {
 	 * 
 	 */
 
-	public boolean canFill(TileEntityTeleplate teleplate, ForgeDirection from, Fluid fluid) {
+	public boolean canFill(TileEntityTeleplate teleplate, ForgeDirection from, Fluid fluid){
 		return fluidConsomationType > 0 && from == ForgeDirection.DOWN;
 	}
 
-	public boolean canDrain(TileEntityTeleplate teleplate, ForgeDirection from, Fluid fluid) {
+	public boolean canDrain(TileEntityTeleplate teleplate, ForgeDirection from, Fluid fluid){
 		return false;
 	}
 
-	public FluidTankInfo[] getTankInfo(TileEntityTeleplate teleplate, ForgeDirection from) {
+	public FluidTankInfo[] getTankInfo(TileEntityTeleplate teleplate, ForgeDirection from){
 		switch (fluidConsomationType) {
 		case 0:
 			return new FluidTankInfo[]{};
@@ -89,7 +87,7 @@ public class FluidConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public int fill(TileEntityTeleplate teleplate, ForgeDirection from, FluidStack resource, boolean doFill) {
+	public int fill(TileEntityTeleplate teleplate, ForgeDirection from, FluidStack resource, boolean doFill){
 		switch (fluidConsomationType) {
 		case 0:
 			return 0;
@@ -103,11 +101,11 @@ public class FluidConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public FluidStack drain(TileEntityTeleplate teleplate, ForgeDirection from, FluidStack resource, boolean doDrain) {
+	public FluidStack drain(TileEntityTeleplate teleplate, ForgeDirection from, FluidStack resource, boolean doDrain){
 		return null;
 	}
 
-	public FluidStack drain(TileEntityTeleplate teleplate, ForgeDirection from, int maxDrain, boolean doDrain) {
+	public FluidStack drain(TileEntityTeleplate teleplate, ForgeDirection from, int maxDrain, boolean doDrain){
 		return null;
 	}
 
@@ -115,7 +113,7 @@ public class FluidConsomationManager implements IConsomationManager {
 	 * 
 	 */
 
-	public FluidStack getFluid(ItemStack itemstack) {
+	public FluidStack getFluid(ItemStack itemstack){
 		switch (fluidConsomationType) {
 		case 0:
 			return null;
@@ -128,7 +126,7 @@ public class FluidConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public int getCapacity(ItemStack itemstack) {
+	public int getCapacity(ItemStack itemstack){
 		switch (fluidConsomationType) {
 		case 0:
 			return 0;
@@ -141,7 +139,7 @@ public class FluidConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public int fill(ItemStack itemstack, FluidStack resource, boolean doFill) {
+	public int fill(ItemStack itemstack, FluidStack resource, boolean doFill){
 		switch (fluidConsomationType) {
 		case 0:
 			return 0;
@@ -154,7 +152,7 @@ public class FluidConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain) {
+	public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain){
 		return null;
 	}
 
@@ -163,7 +161,7 @@ public class FluidConsomationManager implements IConsomationManager {
 	 */
 
 	@Override
-	public boolean canTeleportFromTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromTeleplate(EntityPlayer player){
 		switch(fluidConsomationType){
 		case 0:
 			return true;
@@ -183,7 +181,7 @@ public class FluidConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player){
 		switch(fluidConsomationType){
 		case 0:
 			return true;
@@ -198,7 +196,7 @@ public class FluidConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void onTransfer(EntityPlayer player) {
+	public void onTransfer(EntityPlayer player){
 		if(fluidConsomationType != 0){
 			BlockPos pos;
 			if(player.worldObj.isRemote){
@@ -226,7 +224,7 @@ public class FluidConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		NBTTagList list = new NBTTagList();
 		for(Entry<UUID, FluidStorage> entry : storages.entrySet()){
 			NBTTagCompound tag = new NBTTagCompound();
@@ -239,8 +237,8 @@ public class FluidConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		reset();
+	public void readFromNBT(NBTTagCompound nbt){
+		storages.clear();
 
 		NBTTagList list = (NBTTagList) nbt.getTag("fluid");
 		for(int i = 0; i < list.tagCount(); i++){
@@ -250,26 +248,15 @@ public class FluidConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void reset() {
-		storages.clear();
-	}
-
-	@Override
-	public String getName() {
+	public String getName(){
 		return "FLUID";
 	}
 
-	@Override
-	public void config(Configuration config) {
+	public static void config(Configuration config) {
 		fluidConsomationType = config.getInt("consomationType", "CONSOMATION-FLUID", 1, 0, 2, "Type of fluid usage:\n0=No fluid Usage.\n1=Fluid is stored per player in 5th dimension and used from there.\n2=Fluid is stored per teleplate and when transfering double the transfer amount will be consumed from sending teleplate.");
 		mbPerTransfer = config.getInt("mbPerTransfer", "CONSOMATION-FLUID", 25000, 0, Integer.MAX_VALUE, "Amount of millibuckets teleplate will consume to transfer player to/from 5th dimension.");
 		mbStorage = config.getInt("mbStorage", "CONSOMATION-FLUID", mbPerTransfer * 10, mbPerTransfer * 2, Integer.MAX_VALUE, "Amount of millibuckets stored in 5th dimensdion or teleplate (depends on mbUsageType) used to power teleplates.");
 		fluidToConsume = FluidRegistry.getFluid(config.getString("fluidToConsume", "CONSOMATION-FLUID", Loader.isModLoaded("AWWayofTime") ? "Life Essence" : Loader.isModLoaded("ThermalFoundation") ? "ender" : FluidRegistry.LAVA.getName(), "Type of fluid that teleplates will consume."));
-	}
-
-	@Override
-	public void deactivate() {
-		fluidConsomationType = 0;
 	}
 
 }

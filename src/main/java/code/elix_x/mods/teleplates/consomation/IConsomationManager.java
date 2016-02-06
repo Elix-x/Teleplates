@@ -15,13 +15,7 @@ public interface IConsomationManager {
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt);
 
 	public void readFromNBT(NBTTagCompound nbt);
-
-	public void reset();
-
+	
 	public String getName();
-
-	public void config(Configuration config);
-
-	public void deactivate();
 
 }

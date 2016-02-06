@@ -1,6 +1,7 @@
 package code.elix_x.mods.teleplates.proxy;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
@@ -86,8 +87,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void displayGuiSetTeleplateName(DimBlockPos pos) {
-		Minecraft.getMinecraft().displayGuiScreen(new GuiSetTeleplateName(pos));
+	public void displayGuiSetTeleplateName(EntityPlayer player, DimBlockPos pos) {
+		if(player == Minecraft.getMinecraft().thePlayer) Minecraft.getMinecraft().displayGuiScreen(new GuiSetTeleplateName(pos));
 	}
 
 	@Override
