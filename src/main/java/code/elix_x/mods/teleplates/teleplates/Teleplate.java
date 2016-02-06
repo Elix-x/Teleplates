@@ -1,6 +1,5 @@
 package code.elix_x.mods.teleplates.teleplates;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,9 +18,9 @@ public class Teleplate {
 	private UUID owner;
 
 	private EnumTeleplateMode mode;
-	
+
 	private String password;
-	
+
 	private boolean whitelist;
 	private Set<UUID> list;
 
@@ -114,11 +113,11 @@ public class Teleplate {
 	public Set<UUID> getList(){
 		return list;
 	}
-	
+
 	public void addToList(UUID uuid){
 		list.add(uuid);
 	}
-	
+
 	public void removeFromList(UUID uuid){
 		list.remove(uuid);
 	}

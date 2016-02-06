@@ -35,11 +35,11 @@ public class TeleplatesSavedData extends WorldSavedData {
 		}
 		return data;
 	}
-	
+
 	public static TeleplatesSavedData get(){
 		return get(MinecraftServer.getServer().getEntityWorld());
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public static TeleplatesSavedData getClient(){
 		return get(Minecraft.getMinecraft().theWorld);
@@ -49,7 +49,7 @@ public class TeleplatesSavedData extends WorldSavedData {
 
 	private ConsomationManager consomationManager = new ConsomationManager(this);
 
-	public TeleplatesSavedData(String name) {
+	public TeleplatesSavedData(String name){
 		super(name);
 	}
 
@@ -62,13 +62,13 @@ public class TeleplatesSavedData extends WorldSavedData {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(NBTTagCompound nbt){
 		teleplatesManager.readFromNBT(nbt);
 		consomationManager.readFromNBT(nbt);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public void writeToNBT(NBTTagCompound nbt){
 		teleplatesManager.writeToNBT(nbt);
 		consomationManager.writeToNBT(nbt);
 	}

@@ -55,7 +55,7 @@ public class ConfigurationManager {
 		config.save();
 	}
 
-	private static void loadConsomationManagers() {
+	private static void loadConsomationManagers(){
 		ConsomationManager.register(EnergyConsomationManager.class, "ENERGY-RF");
 		ConsomationManager.register(FluidConsomationManager.class, "FLUID");
 		if(Loader.isModLoaded("Thaumcraft")) ConsomationManager.register(EssentiaConsomationManager.class, "ESSENTIA");
@@ -63,7 +63,7 @@ public class ConfigurationManager {
 		ConsomationManager.register(HolidaysConsomationManager.class, "HOLIDAYS");
 
 		ConsomationManager.activate(config.getStringList("consomationTypes", "consomation", new String[]{}, "Choose what teleplates will consume in order to work.\nValid consomation types: " + ConsomationManager.getAllNames(), ConsomationManager.getAllNames().toArray(new String[0])));
-		
+
 		ConsomationManager.config(config);
 	}
 

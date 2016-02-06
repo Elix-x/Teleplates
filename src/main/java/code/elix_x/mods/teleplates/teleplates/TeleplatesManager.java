@@ -6,14 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
-import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,17 +18,15 @@ import net.minecraft.nbt.NBTTagList;
 
 public class TeleplatesManager {
 
-	public static final Logger logger = LogManager.getLogger("Teleplates Manager");
-
 	private TeleplatesSavedData savedData;
-	
+
 	private Multimap<UUID, Integer> playerIdsMap = HashMultimap.create();
 	private Map<Integer, Teleplate> idTeleplateMap = new HashMap<Integer, Teleplate>();
 	private Map<Integer, Boolean> idValidityMap = new HashMap<Integer, Boolean>();
 
 	private int nextFreeId = 0;
 
-	public TeleplatesManager(TeleplatesSavedData savedData) {
+	public TeleplatesManager(TeleplatesSavedData savedData){
 		this.savedData = savedData;
 	}
 
@@ -69,10 +63,10 @@ public class TeleplatesManager {
 	}
 
 	public void tryChangeName(UUID caller, int teleplate, String newName){
-//		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
-			getTeleplate(teleplate).setName(newName);
-			savedData.synchronizeWithAll();
-//		}
+		//		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
+		getTeleplate(teleplate).setName(newName);
+		savedData.synchronizeWithAll();
+		//		}
 	}
 
 	public  void updateTeleplatePosition(TileEntityTeleplate te){
@@ -102,7 +96,7 @@ public class TeleplatesManager {
 			llist.appendTag(teleplate.writeToNBT(new NBTTagCompound()));
 		}
 		nbt.setTag("idTeleplateMap", llist);
-		
+
 		NBTTagList lllist = new NBTTagList();
 		for(Entry<Integer, Boolean> entry : idValidityMap.entrySet()){
 			NBTTagCompound tag = new NBTTagCompound();
@@ -127,7 +121,7 @@ public class TeleplatesManager {
 			NBTTagCompound tag = llist.getCompoundTagAt(i);
 			idTeleplateMap.put(tag.getInteger("id"), Teleplate.createFromNBT(tag));
 		}
-		
+
 		NBTTagList lllist = (NBTTagList) nbt.getTag("idValidityMap");
 		for(int i = 0; i < lllist.tagCount(); i++){
 			NBTTagCompound tag = lllist.getCompoundTagAt(i);
@@ -139,20 +133,14 @@ public class TeleplatesManager {
 		idValidityMap.put(teleplate, false);
 		savedData.synchronizeWithAll();
 	}
-	
+
 	public void validate(int teleplate){
 		idValidityMap.put(teleplate, true);
 		savedData.synchronizeWithAll();
 	}
 
-	public boolean isValid(int teleplate) {
+	public boolean isValid(int teleplate){
 		return idValidityMap.get(teleplate);
 	}
 
-	public void logDebugInfo() {
-		logger.debug("Next free Id: " + nextFreeId);
-		logger.debug("Player ids: " + playerIdsMap);
-		logger.debug("Id teleplate: " + idTeleplateMap);
-		logger.debug("Id validity: " + idValidityMap);
-	}
 }

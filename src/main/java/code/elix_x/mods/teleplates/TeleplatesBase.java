@@ -42,7 +42,7 @@ public class TeleplatesBase {
 
 	public static final Logger logger = LogManager.getLogger(NAME);
 
-	@SidedProxy(clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
+	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
 	public static SimpleNetworkWrapper net;
