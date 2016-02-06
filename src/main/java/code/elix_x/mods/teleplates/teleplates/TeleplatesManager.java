@@ -67,36 +67,12 @@ public class TeleplatesManager {
 			}
 		}
 	}
-	
-	public boolean isUser(int teleplate, EntityPlayer player) {
-		return isUser(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
-	}
 
-	public boolean isUser(int teleplate, UUID player) {
-		return idTeleplateMap.get(teleplate).isUser(player);
-	}
-	
-	public boolean isModerator(int teleplate, EntityPlayer player) {
-		return isModerator(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
-	}
-
-	public boolean isModerator(int teleplate, UUID player) {
-		return idTeleplateMap.get(teleplate).isModerator(player);
-	}
-	
-	public boolean isAdmin(int teleplate, EntityPlayer player) {
-		return isAdmin(teleplate, EntityPlayer.func_146094_a(player.getGameProfile()));
-	}
-
-	public boolean isAdmin(int teleplate, UUID player) {
-		return idTeleplateMap.get(teleplate).isAdmin(player);
-	}
-
-	public void tryChangeName(UUID caller, int teleplate, String newName) {
-		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
+	public void tryChangeName(UUID caller, int teleplate, String newName){
+//		if((!ConfigurationManager.permissionsSystemActive()) || (ConfigurationManager.permissionsSystemActive() && isModerator(teleplate, caller))){
 			getTeleplate(teleplate).setName(newName);
 			savedData.synchronizeWithAll();
-		}
+//		}
 	}
 
 	public  void updateTeleplatePosition(TileEntityTeleplate te){
@@ -106,18 +82,6 @@ public class TeleplatesManager {
 			if(!teleplate.getPos().equals(pos)){
 				teleplate.setPos(pos);
 				savedData.synchronizeWithAll();
-			}
-		}
-	}
-	
-	public void updateUsers(){
-		for(Teleplate teleplate : idTeleplateMap.values()){
-			for(UUID uuid : playerIdsMap.keySet()){
-				if(teleplate.isUser(uuid)){
-					playerIdsMap.put(uuid, teleplate.getId());
-				} else {
-					playerIdsMap.remove(uuid, teleplate.getId());
-				}
 			}
 		}
 	}
