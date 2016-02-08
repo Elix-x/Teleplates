@@ -19,6 +19,8 @@ public class Teleplate {
 
 	private EnumTeleplateMode mode;
 
+	private boolean usingList;
+
 	private String password;
 
 	private boolean whitelist;
@@ -49,6 +51,7 @@ public class Teleplate {
 		this.pos = pos;
 		this.owner = owner;
 		this.mode = EnumTeleplateMode.PROTECTED;
+		this.usingList = false;
 		this.password = password;
 	}
 
@@ -58,6 +61,7 @@ public class Teleplate {
 		this.pos = pos;
 		this.owner = owner;
 		this.mode = EnumTeleplateMode.PROTECTED;
+		this.usingList = true;
 		this.whitelist = whitelist;
 		this.list = list;
 	}
@@ -92,6 +96,14 @@ public class Teleplate {
 
 	public void setMode(EnumTeleplateMode mode){
 		this.mode = mode;
+	}
+
+	public boolean isUsingList(){
+		return usingList;
+	}
+
+	public void setUsingList(boolean usingList){
+		this.usingList = usingList;
 	}
 
 	public String getPassword(){
