@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import code.elix_x.excore.EXCore;
+import code.elix_x.excore.utils.packets.SmartNetworkWrapper;
 import code.elix_x.mods.teleplates.blocks.BlockTeleplate;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.events.BlockBreakEvent;
@@ -26,7 +27,6 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
@@ -45,7 +45,7 @@ public class TeleplatesBase {
 	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
-	public static SimpleNetworkWrapper net;
+	public static SmartNetworkWrapper net;
 
 	public static Block teleplate;
 
@@ -53,10 +53,10 @@ public class TeleplatesBase {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		net = NetworkRegistry.INSTANCE.newSimpleChannel("teleplates");
-		net.registerMessage(SetTeleplateNameMessage.SetTeleplateNameMessageHandler.class, SetTeleplateNameMessage.class, 0, Side.SERVER);
-		net.registerMessage(SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler.class, SynchronizeTeleplatesMessage.class, 1, Side.CLIENT);
-		net.registerMessage(TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler.class, TeleportToTeleplateMessage.class, 2, Side.SERVER);
+		net = new SmartNetworkWrapper(NAME);
+		net.registerMessage(new SetTeleplateNameMessage.SetTeleplateNameMessageHandler(), SetTeleplateNameMessage.class, Side.SERVER);
+		net.registerMessage(new SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler(), SynchronizeTeleplatesMessage.class, Side.CLIENT);
+		net.registerMessage(new TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler(), TeleportToTeleplateMessage.class, Side.SERVER);
 
 		teleplate = new BlockTeleplate();
 		GameRegistry.registerBlock(teleplate, "teleplate");
