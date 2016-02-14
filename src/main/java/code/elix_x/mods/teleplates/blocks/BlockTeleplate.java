@@ -38,7 +38,7 @@ public class BlockTeleplate extends BlockContainer {
 		if(entity instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer) entity;
 			((TileEntityTeleplate) world.getTileEntity(x, y, z)).init(player, itemstack.hasDisplayName() ? itemstack.getDisplayName() : TeleplatesRandomName.next(world.rand));
-			TeleplatesBase.proxy.displayGuiSetTeleplateName(player, new DimBlockPos(x, y, z, world.provider.dimensionId));
+//			TeleplatesBase.proxy.displayGuiSetTeleplateName(player, new DimBlockPos(x, y, z, world.provider.dimensionId));
 		}
 	}
 
