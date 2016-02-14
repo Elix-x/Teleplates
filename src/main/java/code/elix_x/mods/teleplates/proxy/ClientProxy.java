@@ -1,25 +1,25 @@
 package code.elix_x.mods.teleplates.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
-
 import org.lwjgl.opengl.GL11;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.gui.GuiSelectTeleplate;
-import code.elix_x.mods.teleplates.gui.GuiSetTeleplateName;
+import code.elix_x.mods.teleplates.gui.GuiSetTeleplateSettings;
 import code.elix_x.mods.teleplates.renderer.tileentity.TileEntityTeleplateRenderer;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ClientProxy extends CommonProxy {
 
@@ -92,7 +92,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void displayGuiSelectTeleplate() {
+	public void displayGuiSelectTeleplate(){
 		Minecraft.getMinecraft().displayGuiScreen(new GuiSelectTeleplate());
 	}
 

@@ -15,7 +15,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class SetTeleplateNameMessage implements IMessage{
+public class SetTeleplateNameMessage implements IMessage {
 
 	private UUID caller;
 	private DimBlockPos teleplate;
