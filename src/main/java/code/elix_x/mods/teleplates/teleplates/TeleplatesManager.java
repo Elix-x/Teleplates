@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
+import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,7 +29,7 @@ public class TeleplatesManager {
 
 	public int createTeleplate(EntityPlayer player, String name, DimBlockPos pos){
 		int id = getNextFreeTeleplateId();
-		Teleplate teleplate = new Teleplate(id, name, pos, EntityPlayer.func_146094_a(player.getGameProfile()));	
+		Teleplate teleplate = new Teleplate(id, name, pos, EntityPlayer.func_146094_a(player.getGameProfile()), EnumTeleplateMode.PRIVATE);
 		idTeleplateMap.put(id, teleplate);
 		idValidityMap.put(id, true);
 		savedData.synchronizeWithAll();
