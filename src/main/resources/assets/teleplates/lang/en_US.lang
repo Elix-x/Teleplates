@@ -2,6 +2,13 @@ tile.teleplate.name=Teleplate
 item.portableteleplate.name=Portable Teleplate
 
 teleplates.gui.confirm=Confirm
+teleplates.gui.mode.public=Public
+teleplates.gui.mode.protected=Protected
+teleplates.gui.mode.private=Private
+teleplates.gui.mode.protected.password=Password
+teleplates.gui.mode.protected.list=List
+teleplates.gui.mode.protected.list.whitelist=White List
+teleplates.gui.mode.protected.list.blacklist=Black List
 
 teleplates.cannotchange=You cannot change this teleplate's settings!
 

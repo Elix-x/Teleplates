@@ -88,7 +88,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void displayGuiSetTeleplateName(EntityPlayer player, DimBlockPos pos) {
-		if(player == Minecraft.getMinecraft().thePlayer) Minecraft.getMinecraft().displayGuiScreen(new GuiSetTeleplateName(pos));
+		if(player == Minecraft.getMinecraft().thePlayer) Minecraft.getMinecraft().displayGuiScreen(new GuiSetTeleplateSettings(TeleplatesSavedData.getClient().getTeleplatesManager().getTeleplate(((TileEntityTeleplate) pos.getTileEntity()).getTeleplateId())));
 	}
 
 	@Override
