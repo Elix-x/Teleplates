@@ -71,6 +71,10 @@ public class HolidaysConsomationManager implements IConsomationManager {
 
 	}
 
+	public static void config(Configuration config){
+
+	}
+
 	@Override
 	public String getName(){
 		return "HOLIDAYS";
