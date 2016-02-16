@@ -126,6 +126,10 @@ public class Teleplate {
 		return list;
 	}
 
+	public void setList(Set<UUID> list){
+		this.list = list;
+	}
+
 	public void addToList(UUID uuid){
 		list.add(uuid);
 	}

@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
@@ -54,9 +54,15 @@ public class TeleplatesManager {
 		}
 	}
 
-	public void tryChangeName(UUID caller, int teleplate, String newName){
-		if(getTeleplate(teleplate).getOwner().equals(caller)){
-			getTeleplate(teleplate).setName(newName);
+	public void setTeleplateSettings(Teleplate teleplate, EntityPlayerMP player){
+		Teleplate old = getTeleplate(teleplate.getId());
+		if(old != null && old.getOwner().equals(EntityPlayer.func_146094_a(player.getGameProfile()))){
+			old.setName(teleplate.getName());
+			old.setMode(teleplate.getMode());
+			old.setUsingList(teleplate.isUsingList());
+			old.setPassword(teleplate.getPassword());
+			old.setWhitelist(teleplate.isWhitelist());
+			old.setList(teleplate.getList());
 			savedData.synchronizeWithAll();
 		}
 	}
@@ -70,6 +76,20 @@ public class TeleplatesManager {
 				savedData.synchronizeWithAll();
 			}
 		}
+	}
+
+	public boolean isValid(int teleplate){
+		return idValidityMap.get(teleplate);
+	}
+
+	public void invalidate(int teleplate){
+		idValidityMap.put(teleplate, false);
+		savedData.synchronizeWithAll();
+	}
+
+	public void validate(int teleplate){
+		idValidityMap.put(teleplate, true);
+		savedData.synchronizeWithAll();
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
@@ -104,20 +124,6 @@ public class TeleplatesManager {
 			NBTTagCompound tag = lllist.getCompoundTagAt(i);
 			idValidityMap.put(tag.getInteger("id"), tag.getBoolean("valid"));
 		}
-	}
-
-	public void invalidate(int teleplate) {
-		idValidityMap.put(teleplate, false);
-		savedData.synchronizeWithAll();
-	}
-
-	public void validate(int teleplate){
-		idValidityMap.put(teleplate, true);
-		savedData.synchronizeWithAll();
-	}
-
-	public boolean isValid(int teleplate){
-		return idValidityMap.get(teleplate);
 	}
 
 }

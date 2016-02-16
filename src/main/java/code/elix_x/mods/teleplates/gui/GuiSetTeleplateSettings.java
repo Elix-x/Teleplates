@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import code.elix_x.excore.utils.color.RGBA;
+import code.elix_x.mods.teleplates.TeleplatesBase;
+import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
 import net.minecraft.client.Minecraft;
@@ -147,6 +149,12 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		this.buttonList.add(new GuiButton(0, guiLeft, guiTop + ySize - 20, 128, 20, StatCollector.translateToLocal("teleplates.gui.confirm")));
 	}
 
+	public void reInitGui(){
+		name = textFieldName.getText();
+		password = textFieldPassword.getText();
+		initGui();
+	}
+
 	@Override
 	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_){
 		buttonAddPlayer.enabled = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(textFieldAddPlayer.getText()) != null;
@@ -192,14 +200,34 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton button){
 		if(button.id == 0){
-			//			TeleplatesBase.net.sendToServer(new SetTeleplateNameMessage(EntityPlayer.func_146094_a(Minecraft.getMinecraft().thePlayer.getGameProfile()), teleplate, text.getText()));
+			reInitGui();
+			Teleplate teleplate = new Teleplate(this.teleplate.getId(), name, this.teleplate.getPos(), this.teleplate.getOwner());
+			teleplate.setMode(mode);
+			teleplate.setUsingList(usingList);
+			teleplate.setPassword(password);
+			teleplate.setWhitelist(whitelist);
+			Set<UUID> list;
+			if(this.list != null){
+				list = new HashSet<UUID>();
+				for(String s : this.list){
+					try {
+						list.add(UUID.fromString(s));
+					} catch(IllegalArgumentException e){
+						list.add(EntityPlayer.func_146094_a(Minecraft.getMinecraft().theWorld.getPlayerEntityByName(textFieldAddPlayer.getText()).getGameProfile()));
+					}
+				}
+			} else {
+				list = null;
+			}
+			teleplate.setList(list);
+			TeleplatesBase.net.sendToServer(new SetTeleplateSettingsMessage(teleplate));
 			this.mc.displayGuiScreen((GuiScreen) null);
 			this.mc.setIngameFocus();
 		}
 
 		if(button == buttonModePublic){
 			mode = EnumTeleplateMode.PUBLIC;
-			initGui();
+			reInitGui();
 		}
 		if(button == buttonModeProtected){
 			mode = EnumTeleplateMode.PROTECTED;
@@ -207,23 +235,23 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		}
 		if(button == buttonModePrivate){
 			mode = EnumTeleplateMode.PRIVATE;
-			initGui();
+			reInitGui();
 		}
 
 		if(button == buttonUsingList){
 			usingList = !usingList;
-			initGui();
+			reInitGui();
 		}
 
 		if(button == buttonWhitelist){
 			whitelist = !whitelist;
-			initGui();
+			reInitGui();
 		}
 
 		if(button == buttonAddPlayer){
 			if(list == null) list = new HashSet<String>();
 			list.add(textFieldAddPlayer.getText());
-			initGui();
+			reInitGui();
 		}
 	}
 
@@ -251,7 +279,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 				public boolean mousePressed(int i, int x, int y, int id, int relX, int relY){
 					if(list == null && isCtrlKeyDown()){
 						list.remove(llist[i]);
-						initGui();
+						reInitGui();
 						return true;
 					}
 					return false;

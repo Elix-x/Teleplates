@@ -1,5 +1,8 @@
 package code.elix_x.mods.teleplates;
 
+import java.util.function.Function;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,10 +16,11 @@ import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
 import code.elix_x.mods.teleplates.events.OpPlayerTeleplateEvents;
 import code.elix_x.mods.teleplates.events.SaveLoadEvent;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
-import code.elix_x.mods.teleplates.net.SetTeleplateNameMessage;
+import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.CommonProxy;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -26,7 +30,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
@@ -54,7 +58,22 @@ public class TeleplatesBase {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		net = new SmartNetworkWrapper(NAME);
-		net.registerMessage(new SetTeleplateNameMessage.SetTeleplateNameMessageHandler(), SetTeleplateNameMessage.class, Side.SERVER);
+		net.registerMessage1(new Function<Pair<SetTeleplateSettingsMessage, MessageContext>, Runnable>(){
+
+			@Override
+			public Runnable apply(final Pair<SetTeleplateSettingsMessage, MessageContext> pair){
+				return new Runnable(){
+
+					public void run(){
+						SetTeleplateSettingsMessage message = pair.getKey();
+						MessageContext context = pair.getValue();
+						TeleplatesSavedData.get(context.getServerHandler().playerEntity.worldObj).getTeleplatesManager().setTeleplateSettings(message.teleplate, context.getServerHandler().playerEntity);
+					}
+
+				};
+			}
+
+		}, SetTeleplateSettingsMessage.class, Side.SERVER);
 		net.registerMessage(new SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler(), SynchronizeTeleplatesMessage.class, Side.CLIENT);
 		net.registerMessage(new TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler(), TeleportToTeleplateMessage.class, Side.SERVER);
 
