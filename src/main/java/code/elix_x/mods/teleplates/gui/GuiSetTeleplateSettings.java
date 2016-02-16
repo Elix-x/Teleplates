@@ -1,9 +1,8 @@
 package code.elix_x.mods.teleplates.gui;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import com.google.common.collect.Sets;
 
 import code.elix_x.excore.utils.color.RGBA;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
@@ -14,6 +13,7 @@ import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 
 public class GuiSetTeleplateSettings extends GuiScreen {
@@ -45,9 +45,12 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 	private boolean whitelist;
 	private GuiButton buttonWhitelist;
 
+	private GuiTextField textFieldAddPlayer;
+	private GuiButton buttonAddPlayer;
+
 	private GuiPlayerList listList;
-	private Set<UUID> list;
-	private UUID[] llist;
+	private Set<String> list;
+	private String[] llist;
 
 	public GuiSetTeleplateSettings(Teleplate teleplate){
 		this.teleplate = teleplate;
@@ -61,7 +64,20 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		password = teleplate.getPassword();
 
 		whitelist = teleplate.isWhitelist();
-		list = teleplate.getList() != null ? Sets.newHashSet(teleplate.getList()) : null;
+		if(teleplate.getList() != null){
+			list = new HashSet<String>();
+			for(UUID uuid : teleplate.getList()){
+				EntityPlayer player = Minecraft.getMinecraft().theWorld.func_152378_a(uuid);
+				if(player != null){
+					list.add(player.getCommandSenderName());
+				} else {
+					list.add(uuid.toString());
+				}
+			}
+		} else {
+			list = null;
+		}
+
 	}
 
 	@Override
@@ -71,7 +87,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 		if(mode == EnumTeleplateMode.PROTECTED){
 			if(usingList){
-				ySize = 192;
+				ySize = 232;
 			} else {
 				ySize = 132;
 			}
@@ -118,20 +134,26 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		this.buttonList.add(buttonWhitelist = new GuiButton(5, guiLeft, guiTop + 84, 128, 20, StatCollector.translateToLocal(whitelist ? "teleplates.gui.mode.protected.list.whitelist" : "teleplates.gui.mode.protected.list.blacklist")));
 		buttonWhitelist.visible = mode == EnumTeleplateMode.PROTECTED && usingList;
 
-		listList = new GuiPlayerList(mc, 128, 48, guiTop + 112, guiTop + 164, 16);	
+		listList = new GuiPlayerList(mc, 128, guiTop + 184, guiTop + 112, guiTop + 164, 16);	
 		listList.left = guiLeft;
 		listList.right = guiLeft + 128;
 
-		llist = list != null ? list.toArray(new UUID[0]) : new UUID[0];
+		textFieldAddPlayer = new GuiTextField(fontRendererObj, guiLeft, guiTop + 184, 62, 20);
+		this.buttonList.add(buttonAddPlayer = new GuiButton(6, guiLeft + 66, guiTop + 184, 62, 20, StatCollector.translateToLocal("teleplates.gui.mode.protected.list.add")));
+		buttonAddPlayer.visible = mode == EnumTeleplateMode.PROTECTED && usingList;
+
+		llist = list != null ? list.toArray(new String[0]) : new String[0];
 
 		this.buttonList.add(new GuiButton(0, guiLeft, guiTop + ySize - 20, 128, 20, StatCollector.translateToLocal("teleplates.gui.confirm")));
 	}
 
 	@Override
 	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_){
+		buttonAddPlayer.enabled = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(textFieldAddPlayer.getText()) != null;
 		if(mode == EnumTeleplateMode.PROTECTED){
 			if(usingList){
 				listList.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+				textFieldAddPlayer.drawTextBox();
 			} else {
 				textFieldPassword.drawTextBox();
 			}
@@ -147,6 +169,8 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		if(mode == EnumTeleplateMode.PROTECTED){
 			if(!usingList){
 				textFieldPassword.textboxKeyTyped(ch, i);
+			} else {
+				textFieldAddPlayer.textboxKeyTyped(ch, i);
 			}
 		}
 	}
@@ -158,8 +182,9 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		if(mode == EnumTeleplateMode.PROTECTED){
 			if(usingList){
 				listList.func_148179_a(x, y, id);
+				textFieldAddPlayer.mouseClicked(x, y, id);
 			} else {
-				textFieldPassword.drawTextBox();
+				textFieldPassword.mouseClicked(x, y, id);
 			}
 		}
 	}
@@ -194,6 +219,12 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 			whitelist = !whitelist;
 			initGui();
 		}
+
+		if(button == buttonAddPlayer){
+			if(list == null) list = new HashSet<String>();
+			list.add(textFieldAddPlayer.getText());
+			initGui();
+		}
 	}
 
 	@Override
@@ -218,7 +249,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 				@Override
 				public boolean mousePressed(int i, int x, int y, int id, int relX, int relY){
-					if(list == null || isCtrlKeyDown()){
+					if(list == null && isCtrlKeyDown()){
 						list.remove(llist[i]);
 						initGui();
 						return true;
@@ -228,7 +259,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 				@Override
 				public void drawEntry(int i, int x, int y, int relX, int relY, Tessellator tessellator, int p_148279_7_, int p_148279_8_, boolean p_148279_9_){
-					if(list != null) drawString(fontRendererObj, llist[i].toString(), x, y + 16, new RGBA(1, 1, 1).argb());
+					if(list != null) drawString(fontRendererObj, llist[i], guiLeft, y, new RGBA(1f, 1f, 1f).argb());
 				}
 
 			};
@@ -237,6 +268,11 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		@Override
 		protected int getSize(){
 			return list != null ? list.size() : 1;
+		}
+
+		@Override
+		protected int getScrollBarX(){
+			return right - 6;
 		}
 
 	}

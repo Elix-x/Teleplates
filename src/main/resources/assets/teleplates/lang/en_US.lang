@@ -9,6 +9,7 @@ teleplates.gui.mode.protected.password=Password
 teleplates.gui.mode.protected.list=List
 teleplates.gui.mode.protected.list.whitelist=White List
 teleplates.gui.mode.protected.list.blacklist=Black List
+teleplates.gui.mode.protected.list.add=Add
 
 teleplates.cannotchange=You cannot change this teleplate's settings!
 
