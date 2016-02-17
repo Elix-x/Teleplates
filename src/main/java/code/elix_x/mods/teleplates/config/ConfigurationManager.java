@@ -21,7 +21,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationManager {
@@ -49,7 +48,6 @@ public class ConfigurationManager {
 		debug = config.getBoolean("debug", "debug", false, "Enables debug messages in console.");
 		forceDisplayCoordinatesInGui = config.getBoolean("forceDisplayCoordinatesInGui", "GUI", false, "Force to display teleplate coordinates in teleportation gui.");
 		loadConsomationManagers();
-		permissions = config.getBoolean("permissions", "Permissions", true, "Enables or disables permissions system.\nIt's always deactivated in single player independently from this value.\nMay cause some bugs if activated on offline mode server.");
 		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.teleplate, config.getInt("resulting teleplates", "Recipes", 1, 1, 64, "Amount of teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("teleplate", "Recipes", RecipeStringTranslator.toString("GGG", "RER", "RIR", 'G', "blockGlass", 'R', "dustRedstone", 'E', Items.ender_pearl, 'I', "blockIron"), "Configure recipe for teleplates."))));
 		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.portableTeleplate, config.getInt("resulting portable teleplates", "Recipes", 1, 1, 64, "Amount of portable teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("portable teleplate", "Recipes", RecipeStringTranslator.toString("LGL", "GTG", "LGL", 'L', Items.leather, 'G', "paneGlass", 'T', TeleplatesBase.teleplate), "Configure recipe for portable teleplates."))));
 		config.save();
@@ -73,10 +71,6 @@ public class ConfigurationManager {
 
 	public static void postInit(FMLPostInitializationEvent event){
 
-	}
-
-	public static boolean permissionsSystemActive(){
-		return permissions && MinecraftServer.getServer().isDedicatedServer();
 	}
 
 }

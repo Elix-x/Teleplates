@@ -37,7 +37,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptableSaveVersions = "[1.1,1.2]")
+@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptedMinecraftVersions = EXCore.MCVERSION, acceptableSaveVersions = "[1.1,)")
 public class TeleplatesBase {
 
 	public static final String MODID = "teleplates";
