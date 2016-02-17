@@ -87,7 +87,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 		textFieldName = new GuiTextField(fontRendererObj, guiLeft, guiTop, 128, 20);
 		textFieldName.setText(name);
-		this.buttonList.add(buttonModePublic = new GuiButton(1, guiLeft, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.mode.public")){
+		this.buttonList.add(buttonModePublic = new GuiButton(1, guiLeft, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.settings.mode.public")){
 
 			@Override
 			public int getHoverState(boolean b){
@@ -95,7 +95,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 			}
 
 		});
-		this.buttonList.add(buttonModeProtected = new GuiButton(2, guiLeft + 44, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.mode.protected")){
+		this.buttonList.add(buttonModeProtected = new GuiButton(2, guiLeft + 44, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.settings.mode.protected")){
 
 			@Override
 			public int getHoverState(boolean b){
@@ -103,7 +103,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 			}
 
 		});
-		this.buttonList.add(buttonModePrivate = new GuiButton(3, guiLeft + 88, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.mode.private")){
+		this.buttonList.add(buttonModePrivate = new GuiButton(3, guiLeft + 88, guiTop + 28, 40, 20, StatCollector.translateToLocal("teleplates.gui.settings.mode.private")){
 
 			@Override
 			public int getHoverState(boolean b){
@@ -112,13 +112,13 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 		});
 
-		this.buttonList.add(buttonUsingList = new GuiButton(4, guiLeft, guiTop + 56, 128, 20, StatCollector.translateToLocal(usingList ? "teleplates.gui.mode.protected.list" : "teleplates.gui.mode.protected.password")));
+		this.buttonList.add(buttonUsingList = new GuiButton(4, guiLeft, guiTop + 56, 128, 20, StatCollector.translateToLocal(usingList ? "teleplates.gui.settings.mode.protected.list" : "teleplates.gui.settings.mode.protected.password")));
 		buttonUsingList.visible = mode == EnumTeleplateMode.PROTECTED;
 
 		textFieldPassword = new GuiTextField(fontRendererObj, guiLeft, guiTop + 84, 128, 20);
 		if(password != null) textFieldPassword.setText(password);
 
-		this.buttonList.add(buttonWhitelist = new GuiButton(5, guiLeft, guiTop + 84, 128, 20, StatCollector.translateToLocal(whitelist ? "teleplates.gui.mode.protected.list.whitelist" : "teleplates.gui.mode.protected.list.blacklist")));
+		this.buttonList.add(buttonWhitelist = new GuiButton(5, guiLeft, guiTop + 84, 128, 20, StatCollector.translateToLocal(whitelist ? "teleplates.gui.settings.mode.protected.list.whitelist" : "teleplates.gui.settings.mode.protected.list.blacklist")));
 		buttonWhitelist.visible = mode == EnumTeleplateMode.PROTECTED && usingList;
 
 		listList = new GuiPlayerList(mc, 128, guiTop + 184, guiTop + 112, guiTop + 164, 16);	
@@ -126,12 +126,12 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		listList.right = guiLeft + 128;
 
 		textFieldAddPlayer = new GuiTextField(fontRendererObj, guiLeft, guiTop + 184, 62, 20);
-		this.buttonList.add(buttonAddPlayer = new GuiButton(6, guiLeft + 66, guiTop + 184, 62, 20, StatCollector.translateToLocal("teleplates.gui.mode.protected.list.add")));
+		this.buttonList.add(buttonAddPlayer = new GuiButton(6, guiLeft + 66, guiTop + 184, 62, 20, StatCollector.translateToLocal("teleplates.gui.settings.mode.protected.list.add")));
 		buttonAddPlayer.visible = mode == EnumTeleplateMode.PROTECTED && usingList;
 
 		llist = list != null ? list.toArray(new String[0]) : new String[0];
 
-		this.buttonList.add(new GuiButton(0, guiLeft, guiTop + ySize - 20, 128, 20, StatCollector.translateToLocal("teleplates.gui.confirm")));
+		this.buttonList.add(new GuiButton(0, guiLeft, guiTop + ySize - 20, 128, 20, StatCollector.translateToLocal("teleplates.gui.settings.confirm")));
 	}
 
 	public void reInitGui(){
