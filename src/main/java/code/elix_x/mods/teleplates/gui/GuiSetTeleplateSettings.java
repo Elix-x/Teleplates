@@ -2,7 +2,6 @@ package code.elix_x.mods.teleplates.gui;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import code.elix_x.excore.utils.color.RGBA;
 import code.elix_x.mods.teleplates.TeleplatesBase;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 
 public class GuiSetTeleplateSettings extends GuiScreen {
@@ -66,20 +64,7 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 		password = teleplate.getPassword();
 
 		whitelist = teleplate.isWhitelist();
-		if(teleplate.getList() != null){
-			list = new HashSet<String>();
-			for(UUID uuid : teleplate.getList()){
-				EntityPlayer player = Minecraft.getMinecraft().theWorld.func_152378_a(uuid);
-				if(player != null){
-					list.add(player.getCommandSenderName());
-				} else {
-					list.add(uuid.toString());
-				}
-			}
-		} else {
-			list = null;
-		}
-
+		list = teleplate.getList();
 	}
 
 	@Override
@@ -206,19 +191,6 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 			teleplate.setUsingList(usingList);
 			teleplate.setPassword(password);
 			teleplate.setWhitelist(whitelist);
-			Set<UUID> list;
-			if(this.list != null){
-				list = new HashSet<UUID>();
-				for(String s : this.list){
-					try {
-						list.add(UUID.fromString(s));
-					} catch(IllegalArgumentException e){
-						list.add(EntityPlayer.func_146094_a(Minecraft.getMinecraft().theWorld.getPlayerEntityByName(textFieldAddPlayer.getText()).getGameProfile()));
-					}
-				}
-			} else {
-				list = null;
-			}
 			teleplate.setList(list);
 			TeleplatesBase.net.sendToServer(new SetTeleplateSettingsMessage(teleplate));
 			this.mc.displayGuiScreen((GuiScreen) null);

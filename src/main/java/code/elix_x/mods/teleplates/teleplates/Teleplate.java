@@ -24,7 +24,7 @@ public class Teleplate {
 	private String password;
 
 	private boolean whitelist;
-	private Set<UUID> list;
+	private Set<String> list;
 
 	private Teleplate(){
 
@@ -55,7 +55,7 @@ public class Teleplate {
 		this.password = password;
 	}
 
-	public Teleplate(int id, String name, DimBlockPos pos, UUID owner, boolean whitelist, Set<UUID> list) {
+	public Teleplate(int id, String name, DimBlockPos pos, UUID owner, boolean whitelist, Set<String> list) {
 		this.id = id;
 		this.name = name;
 		this.pos = pos;
@@ -122,19 +122,19 @@ public class Teleplate {
 		this.whitelist = whitelist;
 	}
 
-	public Set<UUID> getList(){
+	public Set<String> getList(){
 		return list;
 	}
 
-	public void setList(Set<UUID> list){
+	public void setList(Set<String> list){
 		this.list = list;
 	}
 
-	public void addToList(UUID uuid){
+	public void addToList(String uuid){
 		list.add(uuid);
 	}
 
-	public void removeFromList(UUID uuid){
+	public void removeFromList(String uuid){
 		list.remove(uuid);
 	}
 
