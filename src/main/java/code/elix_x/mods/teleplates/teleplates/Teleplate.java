@@ -6,6 +6,7 @@ import java.util.UUID;
 import code.elix_x.excore.utils.nbt.mbt.MBT;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 public class Teleplate {
 
@@ -144,6 +145,20 @@ public class Teleplate {
 
 	public static Teleplate createFromNBT(NBTTagCompound nbt){
 		return mbt.fromNBT(nbt, Teleplate.class);
+	}
+	@Deprecated
+	public static Teleplate createFromNBTOld(NBTTagCompound nbt){
+		return new Teleplate(nbt.getInteger("id"), nbt.getString("name"), DimBlockPos.createFromNBT(nbt), null).readPermissionsFromNBTOld(nbt);
+	}
+
+	@Deprecated
+	public Teleplate readPermissionsFromNBTOld(NBTTagCompound nbt){
+		NBTTagList list = (NBTTagList) nbt.getTag("permissions");
+		for(int i = 0; i < list.tagCount(); i++){
+			NBTTagCompound tag = list.getCompoundTagAt(i);
+			if(tag.getInteger("level") == 4) owner = UUID.fromString(tag.getString("uuid"));
+		}
+		return this;
 	}
 
 	@Override
