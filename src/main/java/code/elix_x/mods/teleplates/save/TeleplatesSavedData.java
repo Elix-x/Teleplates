@@ -74,7 +74,7 @@ public class TeleplatesSavedData extends WorldSavedData {
 	}
 
 	@Override
-	public boolean isDirty() {
+	public boolean isDirty(){
 		return true;
 	}
 
