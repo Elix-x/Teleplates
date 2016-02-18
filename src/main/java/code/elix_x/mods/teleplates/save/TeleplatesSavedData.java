@@ -72,7 +72,7 @@ public class TeleplatesSavedData extends WorldSavedData {
 		teleplatesManager.writeToNBT(nbt);
 		consomationManager.writeToNBT(nbt);
 	}
-	
+
 	@Deprecated
 	private void readFromNBTOld(NBTTagCompound nbt){
 		teleplatesManager.readFromNBTOld(nbt);

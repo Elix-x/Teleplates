@@ -146,6 +146,7 @@ public class Teleplate {
 	public static Teleplate createFromNBT(NBTTagCompound nbt){
 		return mbt.fromNBT(nbt, Teleplate.class);
 	}
+
 	@Deprecated
 	public static Teleplate createFromNBTOld(NBTTagCompound nbt){
 		return new Teleplate(nbt.getInteger("id"), nbt.getString("name"), DimBlockPos.createFromNBT(nbt), null).readPermissionsFromNBTOld(nbt);

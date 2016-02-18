@@ -125,7 +125,7 @@ public class TeleplatesManager {
 			idValidityMap.put(tag.getInteger("id"), tag.getBoolean("valid"));
 		}
 	}
-	
+
 	@Deprecated
 	public void readFromNBTOld(NBTTagCompound nbt){		
 		nextFreeId = nbt.getInteger("nextFreeId");
