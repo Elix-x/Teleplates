@@ -7,25 +7,27 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.config.Configuration;
 
 public class LPConsomationManager implements IConsomationManager {
-	
-	public static final LPConsomationManager INSTANCE = new LPConsomationManager();
-	
-	public int lpPerTransfer = 2500;
-	
-	public boolean drainLifeWhenNotEnough = false;
-	
+
+	public static int lpPerTransfer = 2500;
+
+	public static boolean drainLifeWhenNotEnough = false;
+
+	public LPConsomationManager(){
+
+	}
+
 	@Override
-	public boolean canTeleportFromTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromTeleplate(EntityPlayer player){
 		return drainLifeWhenNotEnough || SoulNetworkHandler.getCurrentEssence(SoulNetworkHandler.getUsername(player)) >= lpPerTransfer * 2;
 	}
 
 	@Override
-	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player){
 		return drainLifeWhenNotEnough || SoulNetworkHandler.getCurrentEssence(SoulNetworkHandler.getUsername(player)) >= lpPerTransfer * 2;
 	}
 
 	@Override
-	public void onTransfer(EntityPlayer player) {
+	public void onTransfer(EntityPlayer player){
 		if(drainLifeWhenNotEnough){
 			SoulNetworkHandler.syphonAndDamageFromNetwork(SoulNetworkHandler.getUsername(player), player, lpPerTransfer);
 		} else {
@@ -34,34 +36,23 @@ public class LPConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		return nbt;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		
+	public void readFromNBT(NBTTagCompound nbt){
+
 	}
 
 	@Override
-	public void reset() {
-		
-	}
-
-	@Override
-	public String getName() {
+	public String getName(){
 		return "LP";
 	}
 
-	@Override
-	public void config(Configuration config) {
+	public static void config(Configuration config){
 		lpPerTransfer = config.getInt("LP Per Transfer", "CONSOMATION-LP", 2500, 1, Integer.MAX_VALUE, "Amount of LP consumed to transfer player to/from 5th dimension.");
 		drainLifeWhenNotEnough = config.getBoolean("Drain Life When Not Enough LP", "CONSOMATION-LP", false, "Should teleplates drain life when not enough points are present in LP network.");
-	}
-
-	@Override
-	public void deactivate() {
-		
 	}
 
 }

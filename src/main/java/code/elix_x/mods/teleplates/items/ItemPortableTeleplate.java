@@ -4,8 +4,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import code.elix_x.excore.utils.math.AdvancedMathUtils;
 import code.elix_x.mods.teleplates.consomation.ConsomationManager;
+import code.elix_x.mods.teleplates.consomation.IConsomationManager;
 import code.elix_x.mods.teleplates.consomation.energy.EnergyConsomationManager;
 import code.elix_x.mods.teleplates.consomation.fluid.FluidConsomationManager;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.relauncher.Side;
@@ -33,7 +35,7 @@ public class ItemPortableTeleplate extends Item implements IEnergyContainerItem,
 		setUnlocalizedName("portableteleplate");
 		setCreativeTab(CreativeTabs.tabTransport);
 		setMaxStackSize(1);
-		energyCapacity = energyMaxReceive = energyMaxExtract = EnergyConsomationManager.INSTANCE.rfStorage;
+		energyCapacity = energyMaxReceive = energyMaxExtract = EnergyConsomationManager.rfStorage;
 	}
 
 	@Override
@@ -53,8 +55,10 @@ public class ItemPortableTeleplate extends Item implements IEnergyContainerItem,
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean showDurabilityBar(ItemStack itemstack) {
-		return (ConsomationManager.isActive(EnergyConsomationManager.class) && EnergyConsomationManager.INSTANCE.rfUsageType != 0) || (ConsomationManager.isActive(FluidConsomationManager.class) && FluidConsomationManager.INSTANCE.fluidConsomationType != 0);
+		ConsomationManager manager = TeleplatesSavedData.getClient().getConsomationManager();
+		return (manager.isManagerActive(EnergyConsomationManager.class) && EnergyConsomationManager.rfUsageType != 0) || (manager.isManagerActive(FluidConsomationManager.class) && FluidConsomationManager.fluidConsomationType != 0);
 	}
 
 	@Override
@@ -62,34 +66,58 @@ public class ItemPortableTeleplate extends Item implements IEnergyContainerItem,
 	public double getDurabilityForDisplay(ItemStack itemstack) {
 		if(!showDurabilityBar(itemstack)) return 0;
 		
+		ConsomationManager manager = TeleplatesSavedData.getClient().getConsomationManager();
+		
 		double[] ds = new double[]{};
-		if(EnergyConsomationManager.INSTANCE.rfUsageType != 0 ) ds = ArrayUtils.add(ds, EnergyConsomationManager.INSTANCE.rfUsageType == 1 ? (double) EnergyConsomationManager.INSTANCE.getEnergyStorage(Minecraft.getMinecraft().thePlayer).getEnergyStored() / (double) EnergyConsomationManager.INSTANCE.getEnergyStorage(Minecraft.getMinecraft().thePlayer).getMaxEnergyStored() : getEnergyStored_(itemstack) / (double) getMaxEnergyStored_(itemstack));
-		if(FluidConsomationManager.INSTANCE.fluidConsomationType != 0 ) ds = ArrayUtils.add(ds, FluidConsomationManager.INSTANCE.fluidConsomationType == 1 ? (double) FluidConsomationManager.INSTANCE.getFluidStorage(Minecraft.getMinecraft().thePlayer).getFluidAmount() / (double) FluidConsomationManager.INSTANCE.getFluidStorage(Minecraft.getMinecraft().thePlayer).getCapacity() : getFluid_(itemstack).amount);
+		if(manager.isManagerActive(EnergyConsomationManager.class) && EnergyConsomationManager.rfUsageType != 0){
+			EnergyConsomationManager emanager = manager.getActiveConsomationManager(EnergyConsomationManager.class);
+			ds = ArrayUtils.add(ds, EnergyConsomationManager.rfUsageType == 1 ? (double) emanager.getEnergyStorage(Minecraft.getMinecraft().thePlayer).getEnergyStored() / (double) emanager.getEnergyStorage(Minecraft.getMinecraft().thePlayer).getMaxEnergyStored() : getEnergyStored_(itemstack) / (double) getMaxEnergyStored_(itemstack));
+		}
+		if(manager.isManagerActive(FluidConsomationManager.class) && FluidConsomationManager.fluidConsomationType != 0){
+			FluidConsomationManager fmanager = manager.getActiveConsomationManager(FluidConsomationManager.class);
+			ds = ArrayUtils.add(ds, FluidConsomationManager.fluidConsomationType == 1 ? (double) fmanager.getFluidStorage(Minecraft.getMinecraft().thePlayer).getFluidAmount() / (double) fmanager.getFluidStorage(Minecraft.getMinecraft().thePlayer).getCapacity() : getFluid_(itemstack).amount);
+		}
 		return 1 - AdvancedMathUtils.average(ds);
+	}
+	
+	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
+		return TeleplatesSavedData.get().getConsomationManager().isManagerActive(clas);
+	}
+
+	public <T extends IConsomationManager> T getActiveConsomationManager(Class<T> clas){
+		return TeleplatesSavedData.get().getConsomationManager().getActiveConsomationManager(clas);
 	}
 
 	/*
 	 * Energy
 	 */
+	
+	public boolean isEnergyConsomationManagerActive(){
+		return isConsomationManagerActive(EnergyConsomationManager.class);
+	}
+
+	public EnergyConsomationManager getActiveEnergyConsomationManager(){
+		return getActiveConsomationManager(EnergyConsomationManager.class);
+	}
 
 	@Override
 	public int receiveEnergy(ItemStack itemstack, int maxReceive, boolean simulate) {
-		return EnergyConsomationManager.INSTANCE.receiveEnergy(itemstack, maxReceive, simulate);
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().receiveEnergy(itemstack, maxReceive, simulate) : 0;
 	}
 
 	@Override
 	public int extractEnergy(ItemStack itemstack, int maxExtract, boolean simulate) {
-		return EnergyConsomationManager.INSTANCE.extractEnergy(itemstack, maxExtract, simulate);
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().extractEnergy(itemstack, maxExtract, simulate) : 0;
 	}
 
 	@Override
 	public int getEnergyStored(ItemStack itemstack) {
-		return EnergyConsomationManager.INSTANCE.getEnergyStored(itemstack);
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().getEnergyStored(itemstack) : 0;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ItemStack itemstack) {
-		return EnergyConsomationManager.INSTANCE.getMaxEnergyStored(itemstack);
+		return isEnergyConsomationManagerActive() ? getActiveEnergyConsomationManager().getMaxEnergyStored(itemstack) : 0;
 	}
 
 	public int receiveEnergy_(ItemStack container, int maxReceive, boolean simulate) {
@@ -137,25 +165,33 @@ public class ItemPortableTeleplate extends Item implements IEnergyContainerItem,
 	/*
 	 * Fluid
 	 */
+	
+	public boolean isFluidConsomationManagerActive(){
+		return isConsomationManagerActive(FluidConsomationManager.class);
+	}
+
+	public FluidConsomationManager getActiveFluidConsomationManager(){
+		return getActiveConsomationManager(FluidConsomationManager.class);
+	}
 
 	@Override
 	public FluidStack getFluid(ItemStack container) {
-		return FluidConsomationManager.INSTANCE.getFluid(container);
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().getFluid(container) : null;
 	}
 
 	@Override
 	public int getCapacity(ItemStack container) {
-		return FluidConsomationManager.INSTANCE.getCapacity(container);
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().getCapacity(container) : 0;
 	}
 
 	@Override
 	public int fill(ItemStack container, FluidStack resource, boolean doFill) {
-		return FluidConsomationManager.INSTANCE.fill(container, resource, doFill);
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().fill(container, resource, doFill) : 0;
 	}
 
 	@Override
 	public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-		return FluidConsomationManager.INSTANCE.drain(container, maxDrain, doDrain);
+		return isFluidConsomationManagerActive() ? getActiveFluidConsomationManager().drain(container, maxDrain, doDrain) : null;
 	}
 
 	public FluidStack getFluid_(ItemStack container){

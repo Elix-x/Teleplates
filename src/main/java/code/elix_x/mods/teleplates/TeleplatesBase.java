@@ -1,9 +1,13 @@
 package code.elix_x.mods.teleplates;
 
+import java.util.function.Function;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import code.elix_x.excore.EXCore;
+import code.elix_x.excore.utils.packets.SmartNetworkWrapper;
 import code.elix_x.mods.teleplates.blocks.BlockTeleplate;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.events.BlockBreakEvent;
@@ -12,11 +16,11 @@ import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
 import code.elix_x.mods.teleplates.events.OpPlayerTeleplateEvents;
 import code.elix_x.mods.teleplates.events.SaveLoadEvent;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
-import code.elix_x.mods.teleplates.net.SaveSyncManager;
-import code.elix_x.mods.teleplates.net.SetTeleplateNameMessage;
+import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.CommonProxy;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -26,28 +30,26 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptableSaveVersions = "[1.0,1.1]")
+@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptedMinecraftVersions = EXCore.MCVERSION, acceptableSaveVersions = "[1.1,)")
 public class TeleplatesBase {
 
 	public static final String MODID = "teleplates";
 	public static final String NAME = "Teleplates";
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "1.2";
 
 	public static final Logger logger = LogManager.getLogger(NAME);
 
-	@SidedProxy(clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
+	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
-	public static SimpleNetworkWrapper net;
+	public static SmartNetworkWrapper net;
 
 	public static Block teleplate;
 
@@ -55,10 +57,25 @@ public class TeleplatesBase {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		net = NetworkRegistry.INSTANCE.newSimpleChannel("teleplates");
-		net.registerMessage(SetTeleplateNameMessage.SetTeleplateNameMessageHandler.class, SetTeleplateNameMessage.class, 0, Side.SERVER);
-		net.registerMessage(SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler.class, SynchronizeTeleplatesMessage.class, 1, Side.CLIENT);
-		net.registerMessage(TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler.class, TeleportToTeleplateMessage.class, 2, Side.SERVER);
+		net = new SmartNetworkWrapper(NAME);
+		net.registerMessage1(new Function<Pair<SetTeleplateSettingsMessage, MessageContext>, Runnable>(){
+
+			@Override
+			public Runnable apply(final Pair<SetTeleplateSettingsMessage, MessageContext> pair){
+				return new Runnable(){
+
+					public void run(){
+						SetTeleplateSettingsMessage message = pair.getKey();
+						MessageContext context = pair.getValue();
+						TeleplatesSavedData.get(context.getServerHandler().playerEntity.worldObj).getTeleplatesManager().setTeleplateSettings(message.teleplate, context.getServerHandler().playerEntity);
+					}
+
+				};
+			}
+
+		}, SetTeleplateSettingsMessage.class, Side.SERVER);
+		net.registerMessage(new SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler(), SynchronizeTeleplatesMessage.class, Side.CLIENT);
+		net.registerMessage(new TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler(), TeleportToTeleplateMessage.class, Side.SERVER);
 
 		teleplate = new BlockTeleplate();
 		GameRegistry.registerBlock(teleplate, "teleplate");
@@ -95,8 +112,4 @@ public class TeleplatesBase {
 		proxy.postInit(event);
 	}
 
-	@EventHandler
-	public void onServerStopped(FMLServerStoppedEvent event){
-		SaveSyncManager.onServerStopped(event);
-	}
 }

@@ -1,29 +1,88 @@
 package code.elix_x.mods.teleplates.consomation;
 
-import java.util.UUID;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
-import code.elix_x.excore.utils.pos.BlockPos;
-import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.config.ConfigurationManager;
-import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
-import cofh.api.energy.EnergyStorage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import sun.util.resources.cldr.ur.CurrencyNames_ur;
+import net.minecraftforge.common.config.Configuration;
 
 public class ConsomationManager {
 
-	private static List<IConsomationManager> currentlyActiveManagers = new ArrayList<IConsomationManager>();
+	public static final Logger logger = LogManager.getLogger("Teleplates Consomation Manager");
 
-	public static boolean canTeleportFromTeleplate(EntityPlayer player){
+	private static Map<String, Class<? extends IConsomationManager>> allManagers = new HashMap<String, Class<? extends IConsomationManager>>();
+
+	private static List<Class<? extends IConsomationManager>> activeManagers = new ArrayList<Class<? extends IConsomationManager>>();
+
+	public static void register(Class<? extends IConsomationManager> clas, String name){
+		allManagers.put(name, clas);
+	}
+
+	public static Collection<String> getAllNames(){
+		return allManagers.keySet();
+	}
+
+	public static void activate(String... names) {
+		activeManagers.clear();
+		for(String name : names){
+			activeManagers.add(allManagers.get(name));
+		}
+	}
+
+	public static boolean isActive(Class<? extends IConsomationManager> manager){
+		return activeManagers.contains(manager);
+	}
+
+	public static void config(Configuration config){
+		for(Class<? extends IConsomationManager> clas : allManagers.values()){
+			try {
+				clas.getMethod("config", Configuration.class).invoke(null, config);
+			} catch (Exception e){
+				logger.error("Caught exception while configuring consomation manager (" + clas.getName() + "), it will not be configured:", e);
+			}
+		}
+	}
+
+
+
+	private TeleplatesSavedData savedData;
+
+	private List<IConsomationManager> currentlyActiveManagers = new ArrayList<IConsomationManager>();
+	private Map<Class<? extends IConsomationManager>, IConsomationManager> currentlyActiveManagersMap = new HashMap<Class<? extends IConsomationManager>, IConsomationManager>();
+
+	public ConsomationManager(TeleplatesSavedData savedData) {
+		this.savedData = savedData;
+
+		for(Class<? extends IConsomationManager> clas : activeManagers){
+			if(clas != null){
+				try {
+					IConsomationManager manager = clas.newInstance();
+					currentlyActiveManagers.add(manager);
+					currentlyActiveManagersMap.put(clas, manager);
+				} catch (Exception e){
+					logger.error("Caught exception while instantiating consomation manager (" + clas.getName() + "), it will not be added:", e);
+				}
+			}
+		}
+	}
+
+	public boolean isManagerActive(Class<? extends IConsomationManager> clas){
+		return currentlyActiveManagersMap.containsKey(clas);
+	}
+
+	public <T extends IConsomationManager> T getActiveConsomationManager(Class<T> clas){
+		return (T) currentlyActiveManagersMap.get(clas);
+	}
+
+	public boolean canTeleportFromTeleplate(EntityPlayer player){
 		boolean b = true;
 		for(IConsomationManager manager : currentlyActiveManagers){
 			b &= manager.canTeleportFromTeleplate(player);
@@ -31,7 +90,7 @@ public class ConsomationManager {
 		return b;
 	}
 
-	public static boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
 		boolean b = true;
 		for(IConsomationManager manager : currentlyActiveManagers){
 			b &= manager.canTeleportFromPortableTeleplate(player);
@@ -39,49 +98,22 @@ public class ConsomationManager {
 		return b;
 	}
 
-	public static void onTransfer(EntityPlayer player){
+	public void onTransfer(EntityPlayer player){
 		for(IConsomationManager manager : currentlyActiveManagers){
 			manager.onTransfer(player);
 		}
 	}
 
-	public static NBTTagCompound writeToNBT(NBTTagCompound nbt){
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		for(IConsomationManager manager : currentlyActiveManagers){
 			nbt = manager.writeToNBT(nbt);
 		}
 		return nbt;
 	}
 
-	public static void readFromNBT(NBTTagCompound nbt){
+	public void readFromNBT(NBTTagCompound nbt){
 		for(IConsomationManager manager : currentlyActiveManagers){
 			manager.readFromNBT(nbt);
-		}
-	}
-
-	public static void reset() {
-		for(IConsomationManager manager : currentlyActiveManagers){
-			manager.reset();
-		}
-	}
-
-	public static void logDebugInfo() {
-
-	}
-
-	public static boolean isActive(IConsomationManager manager){
-		return currentlyActiveManagers.contains(manager);
-	}
-	
-	public static boolean isActive(Class<? extends IConsomationManager> manager){
-		for(IConsomationManager managerr : currentlyActiveManagers){
-			if(manager.isAssignableFrom(managerr.getClass())) return true;
-		}
-		return false;
-	}
-
-	public static void activate(List<IConsomationManager> managers, String[] currentActiveName) {
-		for(IConsomationManager manager : managers){
-			if(ArrayUtils.contains(currentActiveName, manager.getName())) currentlyActiveManagers.add(manager);
 		}
 	}
 

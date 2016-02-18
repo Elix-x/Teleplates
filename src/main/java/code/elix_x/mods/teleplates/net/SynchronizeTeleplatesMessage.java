@@ -2,13 +2,14 @@ package code.elix_x.mods.teleplates.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class SynchronizeTeleplatesMessage implements IMessage{
+public class SynchronizeTeleplatesMessage implements IMessage {
 
 	public NBTTagCompound nbt;
 	
@@ -17,7 +18,6 @@ public class SynchronizeTeleplatesMessage implements IMessage{
 	}
 	
 	public SynchronizeTeleplatesMessage(NBTTagCompound nbt) {
-		super();
 		this.nbt = nbt;
 	}
 
@@ -35,9 +35,7 @@ public class SynchronizeTeleplatesMessage implements IMessage{
 
 		@Override
 		public IMessage onMessage(SynchronizeTeleplatesMessage message, MessageContext ctx) {
-			/*TeleplatesManager.reset();
-			TeleplatesManager.readFromNBT(message.nbt);*/
-			SaveSyncManager.onSynchronize(message.nbt);
+			TeleplatesSavedData.getClient().readFromNBT(message.nbt);
 			return null;
 		}
 		

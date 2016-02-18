@@ -1,6 +1,6 @@
 package code.elix_x.mods.teleplates.events;
 
-import code.elix_x.mods.teleplates.net.SaveSyncManager;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Save;
@@ -14,12 +14,7 @@ public class SaveLoadEvent {
 	
 	@SubscribeEvent
 	public void load(Load event){
-		SaveSyncManager.load(event);
-	}
-	
-	@SubscribeEvent
-	public void save(Save event){
-		SaveSyncManager.save(event);
+		TeleplatesSavedData.load(event);
 	}
 	
 }

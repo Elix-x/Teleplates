@@ -30,20 +30,18 @@ public class EssentiaConsomationManager implements IConsomationManager {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Essentia Consomation Manager");
 
-	public static final EssentiaConsomationManager INSTANCE = new EssentiaConsomationManager();
-
-	private EssentiaConsomationManager() {
+	public EssentiaConsomationManager(){
 
 	}
 
-	public int essentiaConsomationType = 0;
-	public int essentiaPerTransfer = 10;
-	public int essentiaStorage = 100;
-	public Aspect aspectToConsume;
+	public static int essentiaConsomationType = 0;
+	public static int essentiaPerTransfer = 10;
+	public static int essentiaStorage = 100;
+	public static Aspect aspectToConsume;
 
 	private Map<UUID, EssentiaStorage> storages = new HashMap<UUID, EssentiaStorage>();
 
-	public EssentiaStorage getDefaultStorage(){
+	public static EssentiaStorage getDefaultStorage(){
 		return new EssentiaStorage(aspectToConsume, essentiaStorage);
 	}
 
@@ -64,19 +62,19 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	 * 
 	 */
 
-	public Aspect getSuctionType(TileEntityTeleplate teleplate, ForgeDirection side) {
+	public Aspect getSuctionType(TileEntityTeleplate teleplate, ForgeDirection side){
 		return aspectToConsume;
 	}
 
-	public int getSuctionAmount(TileEntityTeleplate teleplate, ForgeDirection side) {
+	public int getSuctionAmount(TileEntityTeleplate teleplate, ForgeDirection side){
 		return teleplate.essentiaSuction;
 	}
 
-	public void setSuction(TileEntityTeleplate teleplate, Aspect aspect, int suction) {
+	public void setSuction(TileEntityTeleplate teleplate, Aspect aspect, int suction){
 		if(aspect == aspectToConsume) teleplate.essentiaSuction = suction;
 	}
 
-	public int takeEssentia(TileEntityTeleplate teleplate, Aspect aspect, int amount, ForgeDirection side) {
+	public int takeEssentia(TileEntityTeleplate teleplate, Aspect aspect, int amount, ForgeDirection side){
 		switch (essentiaConsomationType){
 		case 0:
 			return 0;
@@ -90,7 +88,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public int addEssentia(TileEntityTeleplate teleplate, Aspect aspect, int amount, ForgeDirection side) {
+	public int addEssentia(TileEntityTeleplate teleplate, Aspect aspect, int amount, ForgeDirection side){
 		switch (essentiaConsomationType){
 		case 0:
 			return 0;
@@ -104,11 +102,11 @@ public class EssentiaConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public Aspect getEssentiaType(TileEntityTeleplate teleplate, ForgeDirection side) {
+	public Aspect getEssentiaType(TileEntityTeleplate teleplate, ForgeDirection side){
 		return aspectToConsume;
 	}
 
-	public int getEssentiaAmount(TileEntityTeleplate teleplate, ForgeDirection side) {
+	public int getEssentiaAmount(TileEntityTeleplate teleplate, ForgeDirection side){
 		switch (essentiaConsomationType){
 		case 0:
 			return 0;
@@ -122,7 +120,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 		}
 	}
 
-	public AspectList getAspects(TileEntityTeleplate teleplate) {
+	public AspectList getAspects(TileEntityTeleplate teleplate){
 		AspectList list = new AspectList();
 		switch (essentiaConsomationType){
 		case 0:
@@ -139,31 +137,31 @@ public class EssentiaConsomationManager implements IConsomationManager {
 		return list;
 	}
 
-	public void setAspects(TileEntityTeleplate teleplate, AspectList aspects) {
+	public void setAspects(TileEntityTeleplate teleplate, AspectList aspects){
 
 	}
 
-	public boolean doesContainerAccept(TileEntityTeleplate teleplate, Aspect aspect) {
+	public boolean doesContainerAccept(TileEntityTeleplate teleplate, Aspect aspect){
 		return aspect == aspectToConsume;
 	}
 
-	public int addToContainer(TileEntityTeleplate teleplate, Aspect aspect, int amount) {
+	public int addToContainer(TileEntityTeleplate teleplate, Aspect aspect, int amount){
 		return amount - addEssentia(teleplate, aspect, amount, ForgeDirection.DOWN);
 	}
 
-	public boolean takeFromContainer(TileEntityTeleplate teleplate, Aspect aspect, int amount) {
+	public boolean takeFromContainer(TileEntityTeleplate teleplate, Aspect aspect, int amount){
 		return false;
 	}
 
-	public boolean takeFromContainer(TileEntityTeleplate teleplate, AspectList aspects) {
+	public boolean takeFromContainer(TileEntityTeleplate teleplate, AspectList aspects){
 		return false;
 	}
 
-	public boolean doesContainerContainAmount(TileEntityTeleplate teleplate, Aspect aspect, int amount) {
+	public boolean doesContainerContainAmount(TileEntityTeleplate teleplate, Aspect aspect, int amount){
 		return containerContains(teleplate, aspect) >= amount;
 	}
 
-	public boolean doesContainerContain(TileEntityTeleplate teleplate, AspectList aspects) {
+	public boolean doesContainerContain(TileEntityTeleplate teleplate, AspectList aspects){
 		boolean b = true;
 		for(Aspect aspect : aspects.getAspects()){
 			b &= doesContainerContainAmount(teleplate, aspect, aspects.getAmount(aspect));
@@ -179,7 +177,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	 * 
 	 */
 
-	public void thaumUpdate(TileEntityTeleplate teleplate) {
+	public void thaumUpdate(TileEntityTeleplate teleplate){
 		EssentiaStorage stor;
 		switch(essentiaConsomationType){
 		case 1:
@@ -207,7 +205,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	 */
 
 	@Override
-	public boolean canTeleportFromTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromTeleplate(EntityPlayer player){
 		switch(essentiaConsomationType){
 		case 0:
 			return true;
@@ -227,7 +225,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player){
 		switch(essentiaConsomationType){
 		case 0:
 			return true;
@@ -243,7 +241,7 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void onTransfer(EntityPlayer player) {
+	public void onTransfer(EntityPlayer player){
 		if(essentiaConsomationType != 0){
 			BlockPos pos;
 			if(player.worldObj.isRemote){
@@ -271,21 +269,23 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		NBTTagList list = new NBTTagList();
 		for(Entry<UUID, EssentiaStorage> entry : storages.entrySet()){
-			NBTTagCompound tag = new NBTTagCompound();
-			tag = entry.getValue().writeToNBT(tag);
-			tag.setString("uuid", entry.getKey().toString());
-			list.appendTag(tag);
+			if(entry != null && entry.getKey() != null && entry.getValue() != null){
+				NBTTagCompound tag = new NBTTagCompound();
+				tag = entry.getValue().writeToNBT(tag);
+				tag.setString("uuid", entry.getKey().toString());
+				list.appendTag(tag);
+			}
 		}
 		nbt.setTag("essentia", list);
 		return nbt;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		reset();
+	public void readFromNBT(NBTTagCompound nbt){
+		storages.clear();
 
 		NBTTagList list = (NBTTagList) nbt.getTag("essentia");
 		for(int i = 0; i < list.tagCount(); i++){
@@ -295,26 +295,15 @@ public class EssentiaConsomationManager implements IConsomationManager {
 	}
 
 	@Override
-	public void reset() {
-		storages.clear();
-	}
-
-	@Override
-	public String getName() {
+	public String getName(){
 		return "ESSENTIA";
 	}
 
-	@Override
-	public void config(Configuration config) {
+	public static void config(Configuration config){
 		essentiaConsomationType = config.getInt("consomationType", "CONSOMATION-ESSENTIA", 1, 0, 2, "Type of essentia usage:\n0=No essentia Usage.\n1=Essentia is stored per player in 5th dimension and used from there.\n2=Essentia is stored per teleplate and when transfering double the transfer amount will be consumed from sending teleplate.");
 		essentiaPerTransfer = config.getInt("essentiaPerTransfer", "CONSOMATION-ESSENTIA", 25, 0, Integer.MAX_VALUE, "Amount of essentia teleplate will consume to transfer player to/from 5th dimension.");
 		essentiaStorage = config.getInt("essentiaStorage", "CONSOMATION-ESSENTIA", essentiaPerTransfer * 10, essentiaPerTransfer * 2, Integer.MAX_VALUE, "Amount of essentia stored in 5th dimension or teleplate (depends on essentiaUsageType) used to power teleplates.");
 		aspectToConsume = Aspect.getAspect(config.getString("aspectToConsume", "CONSOMATION-ESSENTIA", Aspect.TRAVEL.getTag(), "Aspect that teleplates will consume."));
-	}
-
-	@Override
-	public void deactivate() {
-		essentiaConsomationType = 0;
 	}
 
 }
