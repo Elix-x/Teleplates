@@ -126,4 +126,20 @@ public class TeleplatesManager {
 		}
 	}
 
+	@Deprecated
+	public void readFromNBTOld(NBTTagCompound nbt){		
+		nextFreeId = nbt.getInteger("nextFreeId");
+		NBTTagList llist = (NBTTagList) nbt.getTag("idTeleplateMap");
+		for(int i = 0; i < llist.tagCount(); i++){
+			NBTTagCompound tag = llist.getCompoundTagAt(i);
+			idTeleplateMap.put(tag.getInteger("id"), Teleplate.createFromNBTOld(tag));
+		}
+
+		NBTTagList lllist = (NBTTagList) nbt.getTag("idValidityMap");
+		for(int i = 0; i < lllist.tagCount(); i++){
+			NBTTagCompound tag = lllist.getCompoundTagAt(i);
+			idValidityMap.put(tag.getInteger("id"), tag.getBoolean("valid"));
+		}
+	}
+
 }

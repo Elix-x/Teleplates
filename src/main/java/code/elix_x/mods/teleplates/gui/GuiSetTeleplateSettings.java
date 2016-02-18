@@ -142,7 +142,6 @@ public class GuiSetTeleplateSettings extends GuiScreen {
 
 	@Override
 	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_){
-		buttonAddPlayer.enabled = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(textFieldAddPlayer.getText()) != null;
 		if(mode == EnumTeleplateMode.PROTECTED){
 			if(usingList){
 				listList.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);

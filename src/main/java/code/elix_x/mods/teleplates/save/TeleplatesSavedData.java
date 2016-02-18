@@ -73,8 +73,14 @@ public class TeleplatesSavedData extends WorldSavedData {
 		consomationManager.writeToNBT(nbt);
 	}
 
+	@Deprecated
+	private void readFromNBTOld(NBTTagCompound nbt){
+		teleplatesManager.readFromNBTOld(nbt);
+		consomationManager.readFromNBT(nbt);
+	}
+
 	@Override
-	public boolean isDirty() {
+	public boolean isDirty(){
 		return true;
 	}
 
@@ -90,13 +96,14 @@ public class TeleplatesSavedData extends WorldSavedData {
 		TeleplatesBase.net.sendToAll(new SynchronizeTeleplatesMessage(nbt));
 	}
 
+	@Deprecated
 	public static void load(Load event){
 		if(event.world.provider.dimensionId == 0 && !event.world.isRemote){
 			File teleplates = new File(event.world.getSaveHandler().getWorldDirectory(), "teleplates-move.dat");
 			if(teleplates.exists()){
 				try{
 					NBTTagCompound nbt = CompressedStreamTools.readCompressed(new FileInputStream(teleplates));
-					get(event.world).readFromNBT(nbt);
+					get(event.world).readFromNBTOld(nbt);
 				} catch(Exception e){
 					logger.error("Caught exception while reading move teleplates file: ", e);
 				} finally {
