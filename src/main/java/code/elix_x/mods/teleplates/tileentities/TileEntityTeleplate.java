@@ -3,7 +3,6 @@ package code.elix_x.mods.teleplates.tileentities;
 import java.util.UUID;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
-import code.elix_x.mods.teleplates.consomation.ConsomationManager;
 import code.elix_x.mods.teleplates.consomation.IConsomationManager;
 import code.elix_x.mods.teleplates.consomation.energy.EnergyConsomationManager;
 import code.elix_x.mods.teleplates.consomation.fluid.FluidConsomationManager;
@@ -35,7 +34,6 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 @InterfaceList({@Interface(modid = "Thaumcraft", iface = "thaumcraft.api.aspects.IEssentiaTransport"), @Interface(modid = "Thaumcraft", iface = "thaumcraft.api.aspects.IAspectContainer")})
 public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, IFluidHandler, IEssentiaTransport, IAspectContainer {
 
-	private UUID owner;
 	private int teleplate;
 
 	public EnergyStorage energyStorage;
@@ -51,14 +49,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	public void init(EntityPlayer player, String name){
-		if(!worldObj.isRemote){
-			owner = EntityPlayer.func_146094_a(player.getGameProfile());
-			teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
-			markDirty();
-		} else {
-			owner = EntityPlayer.func_146094_a(player.getGameProfile());
-			markDirty();
-		}
+		teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
 	}
 
 	@Override
@@ -66,10 +57,8 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 		super.setWorldObj(world);
 		TeleplatesSavedData data = TeleplatesSavedData.get(world);		
 
-		if(owner != null){
-			data.getTeleplatesManager().validate(teleplate);
-			data.getTeleplatesManager().updateTeleplatePosition(this);
-		}
+		data.getTeleplatesManager().validate(teleplate);
+		data.getTeleplatesManager().updateTeleplatePosition(this);
 	}
 
 	public int getTeleplateId(){
@@ -77,13 +66,12 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	public UUID getOwner(){
-		return owner;
+		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().getTeleplate(teleplate).getOwner();
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt){
 		super.writeToNBT(nbt);
-		nbt.setString("owner", owner.toString());
 		nbt.setInteger("teleplate", teleplate);
 		energyStorage.writeToNBT(nbt);
 		fluidStorage.writeToNBT(nbt);
@@ -93,7 +81,6 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt){
 		super.readFromNBT(nbt);
-		owner = UUID.fromString(nbt.getString("owner"));
 		teleplate = nbt.getInteger("teleplate");
 		energyStorage.readFromNBT(nbt);
 		fluidStorage.readFromNBT(nbt);
