@@ -13,8 +13,11 @@ public class BlockBreakEvent {
 	@SubscribeEvent
 	public void breakBlock(BreakEvent event){
 		if(event.block == TeleplatesBase.teleplate){
-			if(event.getPlayer().getCurrentEquippedItem() != null && event.getPlayer().getCurrentEquippedItem().getItem() == Items.stick && ((TileEntityTeleplate) new BlockPos(event.x, event.y, event.z).getTileEntity(event.world)).getOwner().equals(EntityPlayer.func_146094_a(event.getPlayer().getGameProfile()))){
-				event.setCanceled(true);
+			if(event.getPlayer().getCurrentEquippedItem() != null && event.getPlayer().getCurrentEquippedItem().getItem() == Items.stick){
+				TileEntityTeleplate teleplate = ((TileEntityTeleplate) new BlockPos(event.x, event.y, event.z).getTileEntity(event.world));
+				if(!teleplate.isErrored() && !teleplate.getOwner().equals(EntityPlayer.func_146094_a(event.getPlayer().getGameProfile()))){
+					event.setCanceled(true);
+				}
 			}
 		}
 	}

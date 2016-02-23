@@ -92,6 +92,11 @@ public class TeleplatesManager {
 		savedData.synchronizeWithAll();
 	}
 
+	public boolean isErrored(int teleplateId){
+		Teleplate teleplate = idTeleplateMap.get(teleplateId);
+		return teleplate == null || teleplate.getOwner() == null || teleplate.getName() == null;
+	}
+
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		nbt.setInteger("nextFreeId", nextFreeId);
 		NBTTagList llist = new NBTTagList();

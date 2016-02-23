@@ -10,6 +10,7 @@ import code.elix_x.mods.teleplates.consomation.fluid.FluidStorage;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaConsomationManager;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaStorage;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
+import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.Loader;
@@ -65,8 +66,16 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 		return teleplate;
 	}
 
+	public Teleplate getTeleplate(){
+		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().getTeleplate(teleplate);
+	}
+
 	public UUID getOwner(){
-		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().getTeleplate(teleplate).getOwner();
+		return getTeleplate().getOwner();
+	}
+
+	public boolean isErrored(){
+		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().isErrored(teleplate);
 	}
 
 	@Override
@@ -98,6 +107,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 
 	@Override
 	public void updateEntity(){
+		if(isErrored() && worldObj.isRemote) worldObj.spawnParticle("angryVillager", xCoord + worldObj.rand.nextDouble(), yCoord + worldObj.rand.nextDouble(), zCoord + worldObj.rand.nextDouble(), 0, -0.05, 0);
 		if(Loader.isModLoaded("Thaumcraft")) thaumUpdate();
 	}
 
