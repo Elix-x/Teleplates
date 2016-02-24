@@ -2,8 +2,8 @@ package code.elix_x.mods.teleplates.consomation.fluid;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,9 +13,7 @@ import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.consomation.IConsomationManager;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
-import cofh.api.energy.EnergyStorage;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.launcher.TerminalTweaker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,23 +22,21 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidRegistry.FluidRegisterEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 
 public class FluidConsomationManager implements IConsomationManager {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Fluid Consomation Manager");
-		
+
 	public FluidConsomationManager(){
-		
+
 	}
 
 	public static int fluidConsomationType = 0;
 	public static int mbPerTransfer = 10000;
 	public static int mbStorage = 100000;
-	public static Fluid fluidToConsume;
+	public static Fluid fluidToConsume = FluidRegistry.LAVA;
 
 	private Map<UUID, FluidStorage> storages = new HashMap<UUID, FluidStorage>();
 
