@@ -107,7 +107,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 
 	@Override
 	public void updateEntity(){
-		if(isErrored() && worldObj.isRemote) worldObj.spawnParticle("angryVillager", xCoord + worldObj.rand.nextDouble(), yCoord + worldObj.rand.nextDouble(), zCoord + worldObj.rand.nextDouble(), 0, -0.05, 0);
+		if(isErrored() && !worldObj.isRemote) worldObj.spawnParticle("angryVillager", xCoord + worldObj.rand.nextDouble(), yCoord + worldObj.rand.nextDouble(), zCoord + worldObj.rand.nextDouble(), 0, -0.05, 0);
 		if(Loader.isModLoaded("Thaumcraft")) thaumUpdate();
 	}
 
