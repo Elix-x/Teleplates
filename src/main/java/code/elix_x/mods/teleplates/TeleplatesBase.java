@@ -19,7 +19,6 @@ import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
 import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
-import code.elix_x.mods.teleplates.proxy.CommonProxy;
 import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
