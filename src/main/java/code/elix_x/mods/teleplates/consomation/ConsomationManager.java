@@ -30,7 +30,7 @@ public class ConsomationManager {
 		return allManagers.keySet();
 	}
 
-	public static void activate(String... names) {
+	public static void activate(String... names){
 		activeManagers.clear();
 		for(String name : names){
 			activeManagers.add(allManagers.get(name));
@@ -58,7 +58,7 @@ public class ConsomationManager {
 	private List<IConsomationManager> currentlyActiveManagers = new ArrayList<IConsomationManager>();
 	private Map<Class<? extends IConsomationManager>, IConsomationManager> currentlyActiveManagersMap = new HashMap<Class<? extends IConsomationManager>, IConsomationManager>();
 
-	public ConsomationManager(TeleplatesSavedData savedData) {
+	public ConsomationManager(TeleplatesSavedData savedData){
 		this.savedData = savedData;
 
 		for(Class<? extends IConsomationManager> clas : activeManagers){
@@ -90,7 +90,7 @@ public class ConsomationManager {
 		return b;
 	}
 
-	public boolean canTeleportFromPortableTeleplate(EntityPlayer player) {
+	public boolean canTeleportFromPortableTeleplate(EntityPlayer player){
 		boolean b = true;
 		for(IConsomationManager manager : currentlyActiveManagers){
 			b &= manager.canTeleportFromPortableTeleplate(player);

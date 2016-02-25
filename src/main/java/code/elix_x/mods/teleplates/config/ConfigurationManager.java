@@ -34,8 +34,6 @@ public class ConfigurationManager {
 
 	public static boolean forceDisplayCoordinatesInGui = false;
 
-	public static boolean permissions = true;
-
 	public static void preInit(FMLPreInitializationEvent event){
 		configFile = new File(event.getModConfigurationDirectory(), "Teleplates.cfg");
 		try {
