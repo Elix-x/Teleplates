@@ -9,6 +9,7 @@ import code.elix_x.mods.teleplates.consomation.fluid.FluidConsomationManager;
 import code.elix_x.mods.teleplates.consomation.fluid.FluidStorage;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaConsomationManager;
 import code.elix_x.mods.teleplates.consomation.thaumcraft.EssentiaStorage;
+import code.elix_x.mods.teleplates.proxy.ClientProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import cofh.api.energy.EnergyStorage;
@@ -17,6 +18,8 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -109,6 +112,12 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	public void updateEntity(){
 		if(isErrored() && !worldObj.isRemote) worldObj.spawnParticle("angryVillager", xCoord + worldObj.rand.nextDouble(), yCoord + worldObj.rand.nextDouble(), zCoord + worldObj.rand.nextDouble(), 0, -0.05, 0);
 		if(Loader.isModLoaded("Thaumcraft")) thaumUpdate();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean shouldRenderInPass(int pass){
+		return ClientProxy.teleplateRendererVersion == 2 ? pass == 1 : pass == 0;
 	}
 
 	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
