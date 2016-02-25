@@ -20,15 +20,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.config.Configuration;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy implements ITeleplatesProxy {
+
+	public static int teleplateRendererVersion = 2;
 
 	public void preInit(FMLPreInitializationEvent event){
 
 	}
 
 	public void init(FMLInitializationEvent event){
-		final TileEntityTeleplateRenderer renderer = new TileEntityTeleplateRenderer();
+		final TileEntityTeleplateRenderer renderer = new TileEntityTeleplateRenderer(teleplateRendererVersion);
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTeleplate.class, renderer);
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TeleplatesBase.teleplate), new IItemRenderer(){
 
@@ -84,6 +87,11 @@ public class ClientProxy extends CommonProxy {
 
 	public void postInit(FMLPostInitializationEvent event){
 
+	}
+
+	@Override
+	public void config(Configuration config){
+		teleplateRendererVersion = config.getInt("Teleplate Renderer Version", "Client", 2, 0, 2, "Version of renderer to render teleplates. Higher versions, may consume more FPS.\n0 - Like in 1.0, but static.\n1 - Like in 1.0\n2 - One that came in 1.2.4");
 	}
 
 	@Override

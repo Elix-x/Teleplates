@@ -34,8 +34,6 @@ public class ConfigurationManager {
 
 	public static boolean forceDisplayCoordinatesInGui = false;
 
-	public static boolean permissions = true;
-
 	public static void preInit(FMLPreInitializationEvent event){
 		configFile = new File(event.getModConfigurationDirectory(), "Teleplates.cfg");
 		try {
@@ -50,6 +48,7 @@ public class ConfigurationManager {
 		loadConsomationManagers();
 		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.teleplate, config.getInt("resulting teleplates", "Recipes", 1, 1, 64, "Amount of teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("teleplate", "Recipes", RecipeStringTranslator.toString("GGG", "RER", "RIR", 'G', "blockGlass", 'R', "dustRedstone", 'E', Items.ender_pearl, 'I', "blockIron"), "Configure recipe for teleplates."))));
 		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.portableTeleplate, config.getInt("resulting portable teleplates", "Recipes", 1, 1, 64, "Amount of portable teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("portable teleplate", "Recipes", RecipeStringTranslator.toString("LGL", "GTG", "LGL", 'L', Items.leather, 'G', "paneGlass", 'T', TeleplatesBase.teleplate), "Configure recipe for portable teleplates."))));
+		TeleplatesBase.proxy.config(config);
 		config.save();
 	}
 
