@@ -20,6 +20,7 @@ import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.CommonProxy;
+import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -47,7 +48,7 @@ public class TeleplatesBase {
 	public static final Logger logger = LogManager.getLogger(NAME);
 
 	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
-	public static CommonProxy proxy;
+	public static ITeleplatesProxy proxy;
 
 	public static SmartNetworkWrapper net;
 

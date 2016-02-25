@@ -20,8 +20,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.config.Configuration;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy implements ITeleplatesProxy {
 
 	public void preInit(FMLPreInitializationEvent event){
 
@@ -84,6 +85,11 @@ public class ClientProxy extends CommonProxy {
 
 	public void postInit(FMLPostInitializationEvent event){
 
+	}
+	
+	@Override
+	public void config(Configuration config){
+		
 	}
 
 	@Override
