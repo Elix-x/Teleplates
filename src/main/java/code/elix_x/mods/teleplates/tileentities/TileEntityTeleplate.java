@@ -59,7 +59,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	@Override
 	public void setWorldObj(World world){
 		super.setWorldObj(world);
-		TeleplatesSavedData data = TeleplatesSavedData.get(world);		
+		TeleplatesSavedData data = TeleplatesSavedData.get(world);
 
 		data.getTeleplatesManager().validate(teleplate);
 		data.getTeleplatesManager().updateTeleplatePosition(this);
@@ -117,7 +117,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldRenderInPass(int pass){
-		return ClientProxy.teleplateRendererVersion == 2 ? pass == 1 : pass == 0;
+		return ClientProxy.teleplateRendererVersion < 2 ? pass == 0 : pass == 1;
 	}
 
 	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
