@@ -42,7 +42,7 @@ public class TeleportationManager {
 					processPlayerTeleportation(player);
 					teleportCooldown.put(player, -1);
 				} else {
-					player.rotationYaw -= DEFAULTCOOLDOWN - teleportCooldown.get(player);
+					player.rotationYaw += DEFAULTCOOLDOWN - teleportCooldown.get(player);
 					teleportCooldown.put(player, teleportCooldown.get(player) - 1);
 				}
 			} else {
