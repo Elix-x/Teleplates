@@ -67,7 +67,7 @@ public class TeleplatesManager {
 		}
 	}
 
-	public  void updateTeleplatePosition(TileEntityTeleplate te){
+	public void updateTeleplatePosition(TileEntityTeleplate te){
 		Teleplate teleplate = getTeleplate(te.getTeleplateId());
 		if(teleplate != null){
 			DimBlockPos pos = new DimBlockPos(te);
