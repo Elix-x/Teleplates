@@ -74,12 +74,6 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 			Tessellator tessellator = Tessellator.instance;
 			tessellator.startDrawingQuads();
 			if(animation){
-				double scale = ((y - 5) / 10) / 2;
-				tessellator.addVertexWithUV(0, 0, 0, 0.5 + x / 10 - scale, 0.5 + z / 10 - scale);
-				tessellator.addVertexWithUV(0, 0, 1, 0.5 + x / 10 - scale, 0.5 + z / 10 + scale);
-				tessellator.addVertexWithUV(1, 0, 1, 0.5 + x / 10 + scale, 0.5 + z / 10 + scale);
-				tessellator.addVertexWithUV(1, 0, 0, 0.5 + x / 10 + scale, 0.5 + z / 10 - scale);
-			} else {
 				int cooldown = TeleportationManager.getCooldown(Minecraft.getMinecraft().thePlayer);
 				double offset = (double) (TeleportationManager.DEFAULTCOOLDOWN - cooldown) / 100 * 2;
 				double yOffest = Math.min(offset, Minecraft.getMinecraft().thePlayer.eyeHeight);
@@ -88,6 +82,12 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 				tessellator.addVertexWithUV(0 - offset, 0 + yOffest, 1 + offset, 0.5 + x / 10 - pngscale, 0.5 + z / 10 + pngscale);
 				tessellator.addVertexWithUV(1 + offset, 0 + yOffest, 1 + offset, 0.5 + x / 10 + pngscale, 0.5 + z / 10 + pngscale);
 				tessellator.addVertexWithUV(1 + offset, 0 + yOffest, 0 - offset, 0.5 + x / 10 + pngscale, 0.5 + z / 10 - pngscale);
+			} else {
+				double scale = ((y - 5) / 10) / 2;
+				tessellator.addVertexWithUV(0, 0, 0, 0.5 + x / -10 - scale, 0.5 + z / -10 - scale);
+				tessellator.addVertexWithUV(0, 0, 1, 0.5 + x / -10 - scale, 0.5 + z / -10 + scale);
+				tessellator.addVertexWithUV(1, 0, 1, 0.5 + x / -10 + scale, 0.5 + z / -10 + scale);
+				tessellator.addVertexWithUV(1, 0, 0, 0.5 + x / -10 + scale, 0.5 + z / -10 - scale);
 			}
 
 			tessellator.draw();
