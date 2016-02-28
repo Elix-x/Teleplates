@@ -40,7 +40,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 		bindTexture(teleplate);
 		GL11.glPushMatrix();
 
-		GL11.glTranslated(x, y + 0.01, z);
+		GL11.glTranslated(x, y + 0.001, z);
 
 		boolean animation = teleportAnimation && TeleportationManager.isTeleporting(Minecraft.getMinecraft().thePlayer) && ((tileentity.xCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posX) && tileentity.yCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posY - 1) && tileentity.zCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posZ)) || (Minecraft.getMinecraft().thePlayer.isUsingItem() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == TeleplatesBase.portableTeleplate));
 
@@ -106,7 +106,6 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 				teleplateObj.renderAll();
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			} else {
-				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 				GL11.glEnable(GL11.GL_STENCIL_TEST);
 				GL11.glColorMask(false, false, false, false);
 				GL11.glDepthMask(false);
@@ -131,11 +130,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 				GL11.glTranslated(0.5, 0, 0.5);
 				GL11.glScaled(0.5, 1, 0.5);
 
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-				teleplateObj.renderAll();
-
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
 				teleplateObj.renderAll();
 
