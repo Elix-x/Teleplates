@@ -23,6 +23,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -53,7 +56,11 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	public void init(EntityPlayer player, String name){
-		teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
+		if(!worldObj.isRemote){
+			teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			markDirty();
+		}
 	}
 
 	@Override
@@ -63,6 +70,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 
 		data.getTeleplatesManager().validate(teleplate);
 		data.getTeleplatesManager().updateTeleplatePosition(this);
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	public int getTeleplateId(){
@@ -82,21 +90,15 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt){
-		super.writeToNBT(nbt);
-		nbt.setInteger("teleplate", teleplate);
-		energyStorage.writeToNBT(nbt);
-		fluidStorage.writeToNBT(nbt);
-		if(Loader.isModLoaded("Thaumcraft")) writeEssentiaStorageToNBT(nbt);
+	public void validate(){
+		super.validate();
+		TeleplatesSavedData.get(worldObj).getTeleplatesManager().validate(teleplate);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt){
-		super.readFromNBT(nbt);
-		teleplate = nbt.getInteger("teleplate");
-		energyStorage.readFromNBT(nbt);
-		fluidStorage.readFromNBT(nbt);
-		if(Loader.isModLoaded("Thaumcraft")) readEssentiaStorageFromNBT(nbt);
+	public void invalidate(){
+		super.invalidate();
+		TeleplatesSavedData.get(worldObj).getTeleplatesManager().invalidate(teleplate);
 	}
 
 	@Override
@@ -119,6 +121,40 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	public boolean shouldRenderInPass(int pass){
 		return ClientProxy.teleplateRendererVersion < 2 ? pass == 0 : pass == 1;
 	}
+
+	@Override
+	public Packet getDescriptionPacket(){
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet){
+		readFromNBT(packet.func_148857_g());
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbt){
+		super.writeToNBT(nbt);
+		nbt.setInteger("teleplate", teleplate);
+		energyStorage.writeToNBT(nbt);
+		fluidStorage.writeToNBT(nbt);
+		if(Loader.isModLoaded("Thaumcraft")) writeEssentiaStorageToNBT(nbt);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt){
+		super.readFromNBT(nbt);
+		teleplate = nbt.getInteger("teleplate");
+		energyStorage.readFromNBT(nbt);
+		fluidStorage.readFromNBT(nbt);
+		if(Loader.isModLoaded("Thaumcraft")) readEssentiaStorageFromNBT(nbt);
+	}
+
+	/*
+	 * Consomation
+	 */
 
 	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
 		return TeleplatesSavedData.get(worldObj).getConsomationManager().isManagerActive(clas);
