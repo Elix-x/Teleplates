@@ -37,12 +37,12 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:CoFHCore;after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptedMinecraftVersions = EXCore.MCVERSION, acceptableSaveVersions = "[1.1,)")
+@Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY + ";after:OpenModsCore;after:CoFHCore;after:ThermalFoundation;after:Thaumcraft;after:AWWayofTime", acceptedMinecraftVersions = EXCore.MCVERSION, acceptableSaveVersions = "[1.1,)")
 public class TeleplatesBase {
 
 	public static final String MODID = "teleplates";
 	public static final String NAME = "Teleplates";
-	public static final String VERSION = "1.2.6";
+	public static final String VERSION = "1.2.7";
 
 	public static final Logger logger = LogManager.getLogger(NAME);
 

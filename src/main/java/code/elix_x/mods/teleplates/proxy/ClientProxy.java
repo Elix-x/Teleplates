@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
+import code.elix_x.mods.teleplates.client.events.LastRenderWorldEvent;
 import code.elix_x.mods.teleplates.client.renderer.tileentity.TileEntityTeleplateRenderer;
 import code.elix_x.mods.teleplates.gui.GuiSelectTeleplate;
 import code.elix_x.mods.teleplates.gui.GuiSetTeleplateSettings;
@@ -20,6 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
 public class ClientProxy implements ITeleplatesProxy {
@@ -52,7 +54,7 @@ public class ClientProxy implements ITeleplatesProxy {
 				if(type == IItemRenderer.ItemRenderType.ENTITY){
 					GL11.glTranslatef(-0.5f, 0.0f, -0.5f);
 				}
-				renderer.renderTileEntityAt(te, 0, 0, 0, 0, false);
+				renderer.renderTileEntityAt(te, 0, 0, 0, 0, true, false);
 			}
 
 		});
@@ -79,10 +81,12 @@ public class ClientProxy implements ITeleplatesProxy {
 					GL11.glTranslated(-1, 1.75, -1);
 					GL11.glRotatef(90f, 1, 0, 1);
 				}
-				renderer.renderTileEntityAt(te, 0, 0, 0, 0, true);
+				renderer.renderTileEntityAt(te, 0, 0, 0, 0, true, true);
 			}
 
 		});
+
+		if(teleplateRendererVersion == 2) MinecraftForge.EVENT_BUS.register(new LastRenderWorldEvent());
 	}
 
 	public void postInit(FMLPostInitializationEvent event){
