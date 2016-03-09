@@ -119,7 +119,7 @@ public class TileEntityTeleplate extends TileEntity implements IEnergyReceiver, 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldRenderInPass(int pass){
-		return ClientProxy.teleplateRendererVersion < 2 ? pass == 0 : pass == 1;
+		return ClientProxy.teleplateRendererVersion != 2 && pass == 0;
 	}
 
 	@Override
