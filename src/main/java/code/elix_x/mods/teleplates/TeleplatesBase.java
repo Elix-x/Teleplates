@@ -76,8 +76,36 @@ public class TeleplatesBase {
 			}
 
 		}, SetTeleplateSettingsMessage.class, Side.SERVER);
-		net.registerMessage(new SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler(), SynchronizeTeleplatesMessage.class, Side.CLIENT);
-		net.registerMessage(new TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler(), TeleportToTeleplateMessage.class, Side.SERVER);
+		net.registerMessage1(new Function<Pair<TeleportToTeleplateMessage, MessageContext>, Runnable>(){
+
+			@Override
+			public Runnable apply(final Pair<TeleportToTeleplateMessage, MessageContext> pair){
+				return new Runnable(){
+
+					@Override
+					public void run(){
+						TeleportationManager.teleport(pair.getRight().getServerHandler().playerEntity, pair.getLeft().teleplate);
+					}
+
+				};
+			}
+
+		}, TeleportToTeleplateMessage.class, Side.SERVER);
+		net.registerMessage3(new Function<SynchronizeTeleplatesMessage, Runnable>(){
+
+			@Override
+			public Runnable apply(final SynchronizeTeleplatesMessage message){
+				return new Runnable(){
+
+					@Override
+					public void run(){
+						TeleplatesSavedData.getClient().readFromNBT(message.nbt);
+					}
+
+				};
+			}
+
+		}, SynchronizeTeleplatesMessage.class, Side.CLIENT);
 		net.registerMessage3(new Function<CooldownChangeMessage, Runnable>(){
 
 			@Override

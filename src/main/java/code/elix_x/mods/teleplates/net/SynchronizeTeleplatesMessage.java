@@ -1,44 +1,30 @@
 package code.elix_x.mods.teleplates.net;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
-import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
-import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class SynchronizeTeleplatesMessage implements IMessage {
 
 	public NBTTagCompound nbt;
-	
-	public SynchronizeTeleplatesMessage() {
-		
+
+	public SynchronizeTeleplatesMessage(){
+
 	}
-	
-	public SynchronizeTeleplatesMessage(NBTTagCompound nbt) {
+
+	public SynchronizeTeleplatesMessage(NBTTagCompound nbt){
 		this.nbt = nbt;
 	}
 
 	@Override
-	public void fromBytes(ByteBuf buf) {
+	public void fromBytes(ByteBuf buf){
 		nbt = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
-	public void toBytes(ByteBuf buf) {
+	public void toBytes(ByteBuf buf){
 		ByteBufUtils.writeTag(buf, nbt);
 	}
 
-	public static class SynchronizeTeleplatesMessageHandler implements IMessageHandler<SynchronizeTeleplatesMessage, IMessage>{
-
-		@Override
-		public IMessage onMessage(SynchronizeTeleplatesMessage message, MessageContext ctx) {
-			TeleplatesSavedData.getClient().readFromNBT(message.nbt);
-			return null;
-		}
-		
-	}
-	
 }
