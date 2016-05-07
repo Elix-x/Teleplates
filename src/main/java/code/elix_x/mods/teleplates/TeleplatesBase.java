@@ -13,7 +13,6 @@ import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.events.BlockBreakEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerJoinEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
-import code.elix_x.mods.teleplates.events.OpPlayerTeleplateEvents;
 import code.elix_x.mods.teleplates.events.SaveLoadEvent;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
 import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
@@ -98,7 +97,6 @@ public class TeleplatesBase {
 		FMLCommonHandler.instance().bus().register(new OnPlayerTickEvent());
 
 		MinecraftForge.EVENT_BUS.register(new BlockBreakEvent());
-		MinecraftForge.EVENT_BUS.register(new OpPlayerTeleplateEvents());
 
 		ConfigurationManager.init(event);
 
