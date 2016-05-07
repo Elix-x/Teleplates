@@ -3,9 +3,6 @@ package code.elix_x.mods.teleplates.teleplates;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.net.CooldownChangeMessage;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
@@ -13,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class TeleportationManager {
-
-	public static final Logger logger = LogManager.getLogger("Teleportation Manager");
 
 	public static final int DEFAULTCOOLDOWN = 100;
 
