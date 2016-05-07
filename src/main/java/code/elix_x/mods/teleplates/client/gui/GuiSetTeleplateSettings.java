@@ -1,4 +1,4 @@
-package code.elix_x.mods.teleplates.gui;
+package code.elix_x.mods.teleplates.client.gui;
 
 import java.util.HashSet;
 import java.util.Set;
