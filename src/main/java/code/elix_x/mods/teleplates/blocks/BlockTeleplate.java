@@ -21,8 +21,6 @@ public class BlockTeleplate extends BlockContainer {
 		setBlockName("teleplate");
 		setBlockBounds(0, 0, 0, 1, 0, 1);
 
-		setBlockUnbreakable();
-
 		setCreativeTab(CreativeTabs.tabTransport);
 	}
 
