@@ -7,9 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import code.elix_x.mods.teleplates.TeleplatesBase;
+import code.elix_x.mods.teleplates.net.CooldownChangeMessage;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 public class TeleportationManager {
 
@@ -27,36 +28,38 @@ public class TeleportationManager {
 		return isTeleporting(player) ? teleportCooldown.get(player) : -1;
 	}
 
+	public static void setCooldown(EntityPlayer player, int cooldown){
+		if(cooldown == -1) teleportCooldown.remove(player);
+		else teleportCooldown.put(player, cooldown);
+		if(!player.worldObj.isRemote) TeleplatesBase.net.sendTo(new CooldownChangeMessage(cooldown), (EntityPlayerMP) player);
+	}
+
 	public static void onPlayerUpdate(EntityPlayer player){
 		if(player != null){
-			Block block;
-			if(player.worldObj.isRemote){
-				block = player.worldObj.getBlock((int) Math.floor(player.posX), (int) Math.floor(player.posY - 1), (int) Math.floor(player.posZ));
-			} else {
-				block = player.worldObj.getBlock((int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ));
-			}
-			if(player.rotationPitch == 90 && ((block == TeleplatesBase.teleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromTeleplate(player)) || (player.isUsingItem() && player.getHeldItem() != null && player.getHeldItem().getItem() == TeleplatesBase.portableTeleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromPortableTeleplate(player)))){
-				if(!isTeleporting(player)){
-					teleportCooldown.put(player, DEFAULTCOOLDOWN);
-				} else if(getCooldown(player) == 0){
-					processPlayerTeleportation(player);
-					teleportCooldown.put(player, -1);
+			if(!player.worldObj.isRemote){
+				if(player.rotationPitch == 90 && ((player.worldObj.getBlock((int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ)) == TeleplatesBase.teleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromTeleplate(player)) || (player.isUsingItem() && player.getHeldItem() != null && player.getHeldItem().getItem() == TeleplatesBase.portableTeleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromPortableTeleplate(player)))){
+					if(!isTeleporting(player)){
+						setCooldown(player, DEFAULTCOOLDOWN);
+					} else if(getCooldown(player) == 0){
+						TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
+						setCooldown(player, -1);
+					} else {
+						player.rotationYaw += DEFAULTCOOLDOWN - teleportCooldown.get(player);
+						setCooldown(player, getCooldown(player) - 1);
+					}
 				} else {
-					player.rotationYaw += DEFAULTCOOLDOWN - teleportCooldown.get(player);
-					teleportCooldown.put(player, teleportCooldown.get(player) - 1);
+					setCooldown(player, -1);
 				}
 			} else {
-				teleportCooldown.remove(player);
+				if(getCooldown(player) == 0){
+					TeleplatesBase.proxy.displayGuiSelectTeleplate();
+				}
 			}
+
 		}
 	}
 
-	private static void processPlayerTeleportation(EntityPlayer player) {
-		TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
-		TeleplatesBase.proxy.displayGuiSelectTeleplate();
-	}
-
-	public static void teleport(EntityPlayer player, int teleplateId) {
+	public static void teleport(EntityPlayer player, int teleplateId){
 		if(player != null){
 			TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
 			Teleplate teleplate = TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplate(teleplateId);

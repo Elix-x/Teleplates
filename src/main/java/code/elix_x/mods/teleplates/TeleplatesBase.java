@@ -15,11 +15,13 @@ import code.elix_x.mods.teleplates.events.OnPlayerJoinEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
 import code.elix_x.mods.teleplates.events.SaveLoadEvent;
 import code.elix_x.mods.teleplates.items.ItemPortableTeleplate;
+import code.elix_x.mods.teleplates.net.CooldownChangeMessage;
 import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
+import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
 import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -33,6 +35,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -75,6 +78,21 @@ public class TeleplatesBase {
 		}, SetTeleplateSettingsMessage.class, Side.SERVER);
 		net.registerMessage(new SynchronizeTeleplatesMessage.SynchronizeTeleplatesMessageHandler(), SynchronizeTeleplatesMessage.class, Side.CLIENT);
 		net.registerMessage(new TeleportToTeleplateMessage.TeleportToTeleplateMessageHandler(), TeleportToTeleplateMessage.class, Side.SERVER);
+		net.registerMessage3(new Function<CooldownChangeMessage, Runnable>(){
+
+			@Override
+			public Runnable apply(final CooldownChangeMessage message){
+				return new Runnable(){
+
+					@Override
+					public void run(){
+						TeleportationManager.setCooldown(Minecraft.getMinecraft().thePlayer, message.cooldown);
+					}
+
+				};
+			}
+
+		}, CooldownChangeMessage.class, Side.CLIENT);
 
 		teleplate = new BlockTeleplate();
 		GameRegistry.registerBlock(teleplate, "teleplate");
