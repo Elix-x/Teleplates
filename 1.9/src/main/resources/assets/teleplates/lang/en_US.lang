@@ -1,0 +1,21 @@
+tile.teleplate.name=Teleplate
+item.portableteleplate.name=Portable Teleplate
+
+teleplates.gui.settings.confirm=Confirm
+teleplates.gui.settings.mode.public=Public
+teleplates.gui.settings.mode.protected=Protected
+teleplates.gui.settings.mode.private=Private
+teleplates.gui.settings.mode.protected.password=Password
+teleplates.gui.settings.mode.protected.list=List
+teleplates.gui.settings.mode.protected.list.whitelist=White List
+teleplates.gui.settings.mode.protected.list.blacklist=Black List
+teleplates.gui.settings.mode.protected.list.add=Add
+
+teleplates.gui.select.teleport=Teleport
+
+teleplates.cannotchange=You cannot change this teleplate's settings!
+
+teleplates.permissions.stick=Now go and hit with this stick ones that you want to op. Than come back!
+teleplates.permission.success=Successfully loaded permissions!
+
+teleplates.happyholidays=Happy Holidays!
