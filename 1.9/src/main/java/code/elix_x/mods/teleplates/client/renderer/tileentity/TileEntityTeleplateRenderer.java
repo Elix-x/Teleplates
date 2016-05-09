@@ -9,7 +9,7 @@ import com.google.common.base.Throwables;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.proxy.ClientProxy;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;

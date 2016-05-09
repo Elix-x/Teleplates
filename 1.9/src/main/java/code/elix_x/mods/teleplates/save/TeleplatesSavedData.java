@@ -1,31 +1,35 @@
 package code.elix_x.mods.teleplates.save;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AConstructor;
+import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AField;
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.consomation.ConsomationManager;
+import code.elix_x.mods.teleplates.clas.TeleplatesAltClassLoader;
+import code.elix_x.mods.teleplates.config.ConfigurationManager;
+import code.elix_x.mods.teleplates.consumption.ConsumptionManager;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.teleplates.TeleplatesManager;
-import net.minecraft.client.Minecraft;
+import code.elix_x.mods.teleplates.tileentity.ITeleplate;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
-import net.minecraftforge.event.world.WorldEvent.Load;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.config.Configuration;
 
-public class TeleplatesSavedData extends WorldSavedData {
+public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends WorldSavedData {
 
 	public static final Logger logger = LogManager.getLogger("Teleplates Saved Data");
 
 	public static final String NAME = "Teleplates";
+
+	private static final AField<TileEntity, Map<String, Class <? extends TileEntity>>> nameToClassMap = new AField(TileEntity.class, "nameToClassMap", "field_145855_i");
+	private static final AField<TileEntity, Map<Class<? extends TileEntity>, String>> classToNameMap = new AField(TileEntity.class, "classToNameMap", "field_145853_j");
 
 	public static TeleplatesSavedData get(World world){
 		TeleplatesSavedData data = (TeleplatesSavedData) world.getMapStorage().loadData(TeleplatesSavedData.class, NAME);
@@ -33,41 +37,64 @@ public class TeleplatesSavedData extends WorldSavedData {
 			data = new TeleplatesSavedData(NAME);
 			world.getMapStorage().setData(NAME, data);
 		}
+		if(data.clas == null){
+			Configuration config= ConfigurationManager.config;
+
+			File worldDir = world.getSaveHandler().getWorldDirectory();
+			if(worldDir != null){
+				File c = new File(worldDir, "Teleplates.cfg");
+				if(c.exists()){
+					config = new Configuration(c);
+					config.load();
+				}
+			}
+
+			data.consumptionManager = new ConsumptionManager(data, config);
+
+			data.clas = new TeleplatesAltClassLoader(TeleplatesSavedData.class.getClassLoader(), data.consumptionManager).genTeleplateClass("code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate");
+			data.constr = new AConstructor(data.clas);
+
+			nameToClassMap.get(null).remove("Teleplate");
+
+			TileEntity.addMapping(data.clas, "Teleplate");
+		}
 		return data;
 	}
 
+	public Class<T> clas;
+
+	private AConstructor<T> constr;
+
 	private TeleplatesManager teleplatesManager = new TeleplatesManager(this);
 
-	private ConsomationManager consomationManager = new ConsomationManager(this);
+	private ConsumptionManager consumptionManager;
 
 	public TeleplatesSavedData(String name){
 		super(name);
+	}
+
+	public T newInstance(){
+		return constr.newInstance();
 	}
 
 	public TeleplatesManager getTeleplatesManager(){
 		return teleplatesManager;
 	}
 
-	public ConsomationManager getConsomationManager(){
-		return consomationManager;
+	public ConsumptionManager getConsumptionManager(){
+		return consumptionManager;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt){
 		teleplatesManager.readFromNBT(nbt);
-		consomationManager.readFromNBT(nbt);
+		consumptionManager.readFromNBT(nbt);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt){
 		teleplatesManager.writeToNBT(nbt);
-		consomationManager.writeToNBT(nbt);
-	}
-
-	@Deprecated
-	private void readFromNBTOld(NBTTagCompound nbt){
-		teleplatesManager.readFromNBTOld(nbt);
-		consomationManager.readFromNBT(nbt);
+		consumptionManager.writeToNBT(nbt);
 	}
 
 	@Override

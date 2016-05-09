@@ -33,11 +33,11 @@ public class TeleportationManager {
 	public static void onPlayerUpdate(EntityPlayer player){
 		if(player != null){
 			if(!player.worldObj.isRemote){
-				if(player.rotationPitch == 90 && ((player.worldObj.getBlockState(player.getPosition()).getBlock() == TeleplatesBase.teleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromTeleplate(player)) || (player.isActiveItemStackBlocking() && player.getHeldItem(EnumHand.MAIN_HAND) != null && player.getHeldItem(EnumHand.MAIN_HAND).getItem() == TeleplatesBase.portableTeleplate && TeleplatesSavedData.get(player.worldObj).getConsomationManager().canTeleportFromPortableTeleplate(player)))){
+				if(player.rotationPitch == 90 && ((player.worldObj.getBlockState(player.getPosition()).getBlock() == TeleplatesBase.teleplate && TeleplatesSavedData.get(player.worldObj).getConsumptionManager().canTeleportFromTeleplate(player)) || (player.isActiveItemStackBlocking() && player.getHeldItem(EnumHand.MAIN_HAND) != null && player.getHeldItem(EnumHand.MAIN_HAND).getItem() == TeleplatesBase.portableTeleplate && TeleplatesSavedData.get(player.worldObj).getConsumptionManager().canTeleportFromPortableTeleplate(player)))){
 					if(!isTeleporting(player)){
 						setCooldown(player, DEFAULTCOOLDOWN);
 					} else if(getCooldown(player) == 0){
-						TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
+						TeleplatesSavedData.get(player.worldObj).getConsumptionManager().onTransfer(player);
 						setCooldown(player, -1);
 					} else {
 						player.rotationYaw += DEFAULTCOOLDOWN - teleportCooldown.get(player);
@@ -57,7 +57,7 @@ public class TeleportationManager {
 
 	public static void teleport(EntityPlayer player, int teleplateId){
 		if(player != null){
-			TeleplatesSavedData.get(player.worldObj).getConsomationManager().onTransfer(player);
+			TeleplatesSavedData.get(player.worldObj).getConsumptionManager().onTransfer(player);
 			Teleplate teleplate = TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplate(teleplateId);
 			if(player.worldObj.provider.getDimension() != teleplate.getPos().getDimId()){
 				player.changeDimension(teleplate.getPos().getDimId());

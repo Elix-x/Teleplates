@@ -13,6 +13,7 @@ import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.events.BlockBreakEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerJoinEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
+import code.elix_x.mods.teleplates.events.WorldLoadEvents;
 import code.elix_x.mods.teleplates.net.CooldownChangeMessage;
 import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
@@ -20,15 +21,14 @@ import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -51,7 +51,8 @@ public class TeleplatesBase {
 
 	public static Block teleplate;
 
-	//TODO public static Item portableTeleplate;
+	//TODO
+	public static Item portableTeleplate;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
@@ -118,9 +119,8 @@ public class TeleplatesBase {
 
 		}, CooldownChangeMessage.class, Side.CLIENT);
 
-		teleplate = new BlockTeleplate();
-		GameRegistry.registerBlock(teleplate, "teleplate");
-		GameRegistry.registerTileEntity(TileEntityTeleplate.class, "teleplate");
+		teleplate = new BlockTeleplate().setRegistryName(MODID, "teleplate");
+		GameRegistry.register(teleplate);
 
 		ConfigurationManager.preInit(event);
 
@@ -129,11 +129,10 @@ public class TeleplatesBase {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event){
-		FMLInterModComms.sendMessage("appliedenergistics2", "whitelist-spatial", TileEntityTeleplate.class.getName());
-
 		MinecraftForge.EVENT_BUS.register(new OnPlayerJoinEvent());
 		MinecraftForge.EVENT_BUS.register(new OnPlayerTickEvent());
 		MinecraftForge.EVENT_BUS.register(new BlockBreakEvent());
+		MinecraftForge.EVENT_BUS.register(new WorldLoadEvents());
 
 		ConfigurationManager.init(event);
 

@@ -3,7 +3,8 @@ package code.elix_x.mods.teleplates.blocks;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.names.TeleplatesRandomName;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
+import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -33,7 +34,7 @@ public class BlockTeleplate extends Block {
 
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state){
-		return new TileEntityTeleplate();
+		return TeleplatesSavedData.get(world).newInstance();
 	}
 
 	@Override

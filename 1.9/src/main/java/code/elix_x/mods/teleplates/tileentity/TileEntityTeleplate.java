@@ -1,30 +1,53 @@
-package code.elix_x.mods.teleplates.tileentities;
+package code.elix_x.mods.teleplates.tileentity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
-import code.elix_x.mods.teleplates.consomation.IConsomationManager;
+import code.elix_x.mods.teleplates.consumption.ConsumptionManager;
+import code.elix_x.mods.teleplates.consumption.IConsumptionManager;
 import code.elix_x.mods.teleplates.proxy.ClientProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityTeleplate extends TileEntity {
+public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEntityTeleplate>, ITickable {
 
 	private int teleplate;
 
+	private Map<String, ITeleplateData> data;
+
 	public TileEntityTeleplate(){
 
+	}
+
+	@Override
+	public TileEntityTeleplate getThis(){
+		return this;
+	}
+
+	@Override
+	public <I extends ITeleplateData> I getData(String name){
+		return (I) data.get(name);
+	}
+
+	@Override
+	public void setData(String name, ITeleplateData data){
+		this.data.put(name, data);
 	}
 
 	public void init(EntityPlayer player, String name){
@@ -39,6 +62,9 @@ public class TileEntityTeleplate extends TileEntity {
 	public void setWorldObj(World world){
 		super.setWorldObj(world);
 		TeleplatesSavedData data = TeleplatesSavedData.get(world);
+
+		this.data = new HashMap<String, ITeleplateData>();
+		for(IConsumptionManager manager : data.getConsumptionManager().getActiveManagers()) this.data.put(ConsumptionManager.getName(manager), manager.provideData(this));
 
 		data.getTeleplatesManager().validate(teleplate);
 		data.getTeleplatesManager().updateTeleplatePosition(this);
@@ -59,6 +85,11 @@ public class TileEntityTeleplate extends TileEntity {
 
 	public boolean isErrored(){
 		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().isErrored(teleplate);
+	}
+
+	@Override
+	public void update(){
+		for(ITeleplateData data : this.data.values()) data.update();
 	}
 
 	@Override
@@ -104,24 +135,32 @@ public class TileEntityTeleplate extends TileEntity {
 	public void writeToNBT(NBTTagCompound nbt){
 		super.writeToNBT(nbt);
 		nbt.setInteger("teleplate", teleplate);
+		for(Entry<String, ITeleplateData> e : data.entrySet()){
+			NBTBase tag = e.getValue().serializeNBT();
+			if(tag != null) nbt.setTag(e.getKey(), tag);
+		}
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt){
 		super.readFromNBT(nbt);
 		teleplate = nbt.getInteger("teleplate");
+		for(Entry<String, ITeleplateData> e : data.entrySet()){
+			NBTBase tag = nbt.getTag(e.getKey());
+			if(tag != null) e.getValue().deserializeNBT(tag);
+		}
 	}
 
 	/*
 	 * Consomation
 	 */
 
-	public boolean isConsomationManagerActive(Class<? extends IConsomationManager> clas){
-		return TeleplatesSavedData.get(worldObj).getConsomationManager().isManagerActive(clas);
+	public boolean isConsomationManagerActive(Class<? extends IConsumptionManager> clas){
+		return TeleplatesSavedData.get(worldObj).getConsumptionManager().isManagerActive(clas);
 	}
 
-	public <T extends IConsomationManager> T getActiveConsomationManager(Class<T> clas){
-		return TeleplatesSavedData.get(worldObj).getConsomationManager().getActiveConsomationManager(clas);
+	public <T extends IConsumptionManager> T getActiveConsomationManager(Class<T> clas){
+		return TeleplatesSavedData.get(worldObj).getConsumptionManager().getActiveConsomationManager(clas);
 	}
 
 }

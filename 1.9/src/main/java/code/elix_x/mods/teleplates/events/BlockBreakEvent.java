@@ -1,7 +1,7 @@
 package code.elix_x.mods.teleplates.events;
 
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.util.EnumHand;

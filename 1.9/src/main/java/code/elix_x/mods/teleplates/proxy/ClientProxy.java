@@ -2,18 +2,14 @@ package code.elix_x.mods.teleplates.proxy;
 
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.client.events.LastRenderWorldEvent;
 import code.elix_x.mods.teleplates.client.gui.GuiSelectTeleplate;
 import code.elix_x.mods.teleplates.client.gui.GuiSetTeleplateSettings;
-import code.elix_x.mods.teleplates.client.renderer.tileentity.TileEntityTeleplateRenderer;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
-import code.elix_x.mods.teleplates.tileentities.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.model.obj.OBJLoader;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -27,10 +23,9 @@ public class ClientProxy implements ITeleplatesProxy {
 	}
 
 	public void init(FMLInitializationEvent event){
-		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTeleplate.class, new TileEntityTeleplateRenderer());
-		if(teleplateRendererVersion == 2) MinecraftForge.EVENT_BUS.register(new LastRenderWorldEvent());
-
 		OBJLoader.INSTANCE.addDomain(TeleplatesBase.MODID);
+		//		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTeleplate.class, new TileEntityTeleplateRenderer());
+		//		if(teleplateRendererVersion == 2) MinecraftForge.EVENT_BUS.register(new LastRenderWorldEvent());
 	}
 
 	public void postInit(FMLPostInitializationEvent event){
