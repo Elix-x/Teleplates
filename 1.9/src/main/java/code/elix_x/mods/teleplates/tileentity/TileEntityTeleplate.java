@@ -29,7 +29,7 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 
 	private int teleplate;
 
-	private Map<String, ITeleplateData> data;
+	private Map<String, ITeleplateData> data = new HashMap<String, ITeleplateData>();
 
 	public TileEntityTeleplate(){
 
@@ -63,7 +63,6 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 		super.setWorldObj(world);
 		TeleplatesSavedData data = TeleplatesSavedData.get(world);
 
-		this.data = new HashMap<String, ITeleplateData>();
 		for(IConsumptionManager manager : data.getConsumptionManager().getActiveManagers()) this.data.put(ConsumptionManager.getName(manager), manager.provideData(this));
 
 		data.getTeleplatesManager().validate(teleplate);
