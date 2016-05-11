@@ -7,8 +7,8 @@ import java.util.List;
 import code.elix_x.excore.utils.color.RGBA;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
+import code.elix_x.mods.teleplates.proxy.ClientProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate;
 import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
@@ -145,7 +145,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 			public TeleplateEntry(int i){
 				teleplate = teleplates.get(i);
 				display = teleplate.getName();
-				boolean b = ConfigurationManager.forceDisplayCoordinatesInGui;
+				boolean b = ClientProxy.forceDisplayCoordinatesInGui;
 				for(Teleplate t : teleplates){
 					if(t != teleplate && t.getName().equals(teleplate.getName())){
 						b = true;

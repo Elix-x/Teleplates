@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy implements ITeleplatesProxy {
 
+	public static boolean forceDisplayCoordinatesInGui = false;
 	public static int teleplateRendererVersion = 2;
 
 	public void preInit(FMLPreInitializationEvent event){
@@ -34,6 +35,7 @@ public class ClientProxy implements ITeleplatesProxy {
 
 	@Override
 	public void config(Configuration config){
+		forceDisplayCoordinatesInGui = config.getBoolean("forceDisplayCoordinatesInGui", "Client", false, "Force to display teleplate coordinates in teleportation gui.");
 		teleplateRendererVersion = config.getInt("Teleplate Renderer Version", "Client", 2, 0, 2, "Version of renderer to render teleplates. Higher versions, may consume more FPS.\n0 - Like in 1.0, but static.\n1 - Like in 1.0\n2 - One that came in 1.2.4");
 	}
 

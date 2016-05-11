@@ -23,9 +23,6 @@ public class ConfigurationManager {
 	public static File configFile;
 	public static Configuration config;
 
-	public static boolean debug = false;
-
-	public static boolean forceDisplayCoordinatesInGui = false;
 
 	public static void preInit(FMLPreInitializationEvent event){
 		configFile = new File(event.getModConfigurationDirectory(), "Teleplates.cfg");
@@ -36,16 +33,19 @@ public class ConfigurationManager {
 		}
 		config = new Configuration(configFile);
 		config.load();
-		debug = config.getBoolean("debug", "debug", false, "Enables debug messages in console.");
-		forceDisplayCoordinatesInGui = config.getBoolean("forceDisplayCoordinatesInGui", "GUI", false, "Force to display teleplate coordinates in teleportation gui.");
-		loadConsomationManagers();
-		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.teleplate, config.getInt("resulting teleplates", "Recipes", 1, 1, 64, "Amount of teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("teleplate", "Recipes", RecipeStringTranslator.toString("GGG", "RER", "RIR", 'G', "blockGlass", 'R', "dustRedstone", 'E', Items.ENDER_PEARL, 'I', "blockIron"), "Configure recipe for teleplates."))));
-//		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.portableTeleplate, config.getInt("resulting portable teleplates", "Recipes", 1, 1, 64, "Amount of portable teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("portable teleplate", "Recipes", RecipeStringTranslator.toString("LGL", "GTG", "LGL", 'L', Items.LEATHER, 'G', "paneGlass", 'T', TeleplatesBase.teleplate), "Configure recipe for portable teleplates."))));
+		loadFromConfig(config);
 		TeleplatesBase.proxy.config(config);
 		config.save();
 	}
 
-	private static void loadConsomationManagers(){
+	private static Configuration loadFromConfig(Configuration config){
+		loadConsumptionManagers();
+		GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.teleplate, config.getInt("resulting teleplates", "Recipes", 1, 1, 64, "Amount of teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("teleplate", "Recipes", RecipeStringTranslator.toString("GGG", "RER", "RIR", 'G', "blockGlass", 'R', "dustRedstone", 'E', Items.ENDER_PEARL, 'I', "blockIron"), "Configure recipe for teleplates."))));
+		//				GameRegistry.addRecipe(RecipeStringTranslator.fromString(new ItemStack(TeleplatesBase.portableTeleplate, config.getInt("resulting portable teleplates", "Recipes", 1, 1, 64, "Amount of portable teleplates as result of recipe.")), RecipeStringTranslator.validateFromConfig(config.getStringList("portable teleplate", "Recipes", RecipeStringTranslator.toString("LGL", "GTG", "LGL", 'L', Items.LEATHER, 'G', "paneGlass", 'T', TeleplatesBase.teleplate), "Configure recipe for portable teleplates."))));
+		return config;
+	}
+
+	private static void loadConsumptionManagers(){
 
 	}
 
