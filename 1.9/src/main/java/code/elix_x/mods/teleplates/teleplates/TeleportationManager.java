@@ -25,9 +25,11 @@ public class TeleportationManager {
 	}
 
 	public static void setCooldown(EntityPlayer player, int cooldown){
-		if(cooldown == -1) teleportCooldown.remove(player);
-		else teleportCooldown.put(player, cooldown);
-		if(!player.worldObj.isRemote) TeleplatesBase.net.sendTo(new CooldownChangeMessage(cooldown), (EntityPlayerMP) player);
+		if(player != null){
+			if(cooldown == -1) teleportCooldown.remove(player);
+			else teleportCooldown.put(player, cooldown);
+			if(!player.worldObj.isRemote) TeleplatesBase.net.sendTo(new CooldownChangeMessage(cooldown), (EntityPlayerMP) player);
+		}
 	}
 
 	public static void onPlayerUpdate(EntityPlayer player){
