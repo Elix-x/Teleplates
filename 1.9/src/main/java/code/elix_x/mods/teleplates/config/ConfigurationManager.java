@@ -57,4 +57,18 @@ public class ConfigurationManager {
 
 	}
 
+	public static Configuration config(World world){
+			Configuration config = ConfigurationManager.config;
+
+			File worldDir = world.getSaveHandler().getWorldDirectory();
+			if(worldDir != null){
+				File c = new File(worldDir, "Teleplates.cfg");
+				if(c.exists()){
+					config = new Configuration(c);
+					config.load();
+				}
+			}
+
+			return loadFromConfig(config);
+	}
 }

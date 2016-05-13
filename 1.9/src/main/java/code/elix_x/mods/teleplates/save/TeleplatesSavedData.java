@@ -38,18 +38,7 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 			world.getMapStorage().setData(NAME, data);
 		}
 		if(data.clas == null){
-			Configuration config= ConfigurationManager.config;
-
-			File worldDir = world.getSaveHandler().getWorldDirectory();
-			if(worldDir != null){
-				File c = new File(worldDir, "Teleplates.cfg");
-				if(c.exists()){
-					config = new Configuration(c);
-					config.load();
-				}
-			}
-
-			data.consumptionManager = new ConsumptionManager(data, config);
+			data.consumptionManager = new ConsumptionManager(data, ConfigurationManager.config(world));
 
 			data.clas = new TeleplatesAltClassLoader(TeleplatesSavedData.class.getClassLoader(), data.consumptionManager).genTeleplateClass("code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate");
 			data.constr = new AConstructor(data.clas);
