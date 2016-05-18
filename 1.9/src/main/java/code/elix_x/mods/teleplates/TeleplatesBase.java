@@ -16,6 +16,7 @@ import code.elix_x.mods.teleplates.events.OnPlayerTickEvent;
 import code.elix_x.mods.teleplates.events.WorldLoadEvents;
 import code.elix_x.mods.teleplates.net.CooldownChangeMessage;
 import code.elix_x.mods.teleplates.net.SetTeleplateSettingsMessage;
+import code.elix_x.mods.teleplates.net.SyncConfigurationMessage;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
 import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
@@ -25,12 +26,15 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -88,6 +92,19 @@ public class TeleplatesBase {
 			}
 
 		}, TeleportToTeleplateMessage.class, Side.SERVER);
+		net.registerMessage(new IMessageHandler<SyncConfigurationMessage, IMessage>(){
+
+			@Override
+			public IMessage onMessage(SyncConfigurationMessage message, MessageContext ctx){
+				ConfigurationManager.logger.info("Received config packet S.");
+				Configuration config = new Configuration(message.temp);
+				config.load();
+				ConfigurationManager.clientConfigQueue.add(config);
+				ConfigurationManager.logger.info("Received config packet F.");
+				return null;
+			}
+
+		}, SyncConfigurationMessage.class, Side.CLIENT);
 		net.registerMessage3(new Function<SynchronizeTeleplatesMessage, Runnable>(){
 
 			@Override
