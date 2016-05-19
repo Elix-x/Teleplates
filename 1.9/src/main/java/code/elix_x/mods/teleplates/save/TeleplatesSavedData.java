@@ -1,6 +1,5 @@
 package code.elix_x.mods.teleplates.save;
 
-import java.io.File;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
-import net.minecraftforge.common.config.Configuration;
 
 public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends WorldSavedData {
 
@@ -38,8 +36,6 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 			world.getMapStorage().setData(NAME, data);
 		}
 		if(data.clas == null){
-			data.consumptionManager = new ConsumptionManager(data, ConfigurationManager.config(world));
-
 			data.clas = new TeleplatesAltClassLoader(TeleplatesSavedData.class.getClassLoader(), data.consumptionManager).genTeleplateClass("code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate");
 			data.constr = new AConstructor(data.clas);
 
@@ -56,7 +52,7 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 
 	private TeleplatesManager teleplatesManager = new TeleplatesManager(this);
 
-	private ConsumptionManager consumptionManager;
+	private ConsumptionManager consumptionManager = new ConsumptionManager(this, ConfigurationManager.config);
 
 	public TeleplatesSavedData(String name){
 		super(name);
