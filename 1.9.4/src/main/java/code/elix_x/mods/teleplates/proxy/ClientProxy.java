@@ -9,6 +9,8 @@ import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.tileentity.IInternalTeleplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -57,6 +59,7 @@ public class ClientProxy implements ITeleplatesProxy {
 	@Override
 	public void updateTeleplatesClass(Class clas){
 		ClientRegistry.bindTileEntitySpecialRenderer(clas, new TileEntityTeleplateRenderer());
+		ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(TeleplatesBase.teleplate), 0, clas);
 	}
 
 }

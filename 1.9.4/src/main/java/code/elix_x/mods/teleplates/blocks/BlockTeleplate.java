@@ -15,14 +15,31 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockTeleplate extends Block {
 
+	public static final AxisAlignedBB PLATE = new AxisAlignedBB(0, 0, 0, 1, 0.1, 1);
+
 	public BlockTeleplate(){
 		super(Material.IRON);
 		setUnlocalizedName("teleplate");
+	}
+
+	@Override
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){
+		return PLATE;
+	}
+
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos){
+		return null;
+	}
+
+	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid){
+		return false;
 	}
 
 	@Override
@@ -48,6 +65,26 @@ public class BlockTeleplate extends Block {
 		if(itemstack != null && itemstack.getItem() == Items.PAPER){
 			TeleplatesBase.proxy.displayGuiSetTeleplateName(player, new DimBlockPos(pos, world.provider.getDimension()));
 		}
+		return false;
+	}
+
+	@Override
+	public boolean isFullCube(IBlockState state){
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state){
+		return false;
+	}
+
+	@Override
+	public boolean isFullBlock(IBlockState state){
+		return false;
+	}
+
+	@Override
+	public boolean isFullyOpaque(IBlockState state){
 		return false;
 	}
 

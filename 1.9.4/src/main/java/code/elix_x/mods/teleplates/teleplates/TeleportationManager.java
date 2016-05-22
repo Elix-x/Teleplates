@@ -49,8 +49,11 @@ public class TeleportationManager {
 					setCooldown(player, -1);
 				}
 			} else {
-				if(getCooldown(player) == 0){
-					TeleplatesBase.proxy.displayGuiSelectTeleplate();
+				if(isTeleporting(player)){
+					player.rotationYaw += DEFAULTCOOLDOWN - teleportCooldown.get(player);
+					if(getCooldown(player) == 0){
+						TeleplatesBase.proxy.displayGuiSelectTeleplate();
+					}
 				}
 			}
 
