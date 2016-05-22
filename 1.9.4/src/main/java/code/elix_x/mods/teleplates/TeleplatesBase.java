@@ -23,7 +23,9 @@ import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -121,6 +123,7 @@ public class TeleplatesBase {
 
 		teleplate = new BlockTeleplate().setRegistryName(MODID, "teleplate");
 		GameRegistry.register(teleplate);
+		GameRegistry.register(new ItemBlock(teleplate).setCreativeTab(CreativeTabs.TRANSPORTATION).setRegistryName(MODID, "teleplate"));
 
 		ConfigurationManager.preInit(event);
 

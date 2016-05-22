@@ -8,7 +8,6 @@ import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -24,7 +23,6 @@ public class BlockTeleplate extends Block {
 	public BlockTeleplate(){
 		super(Material.IRON);
 		setUnlocalizedName("teleplate");
-		setCreativeTab(CreativeTabs.TRANSPORTATION);
 	}
 
 	@Override
