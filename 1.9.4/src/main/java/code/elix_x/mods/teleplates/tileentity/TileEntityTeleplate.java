@@ -16,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -119,7 +118,7 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 	}
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public SPacketUpdateTileEntity getUpdatePacket(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);
@@ -131,13 +130,14 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt){
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		super.writeToNBT(nbt);
 		nbt.setInteger("teleplate", teleplate);
 		for(Entry<String, ITeleplateData> e : data.entrySet()){
 			NBTBase tag = e.getValue().serializeNBT();
 			if(tag != null) nbt.setTag(e.getKey(), tag);
 		}
+		return nbt;
 	}
 
 	@Override

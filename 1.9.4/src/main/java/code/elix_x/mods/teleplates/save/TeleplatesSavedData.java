@@ -30,7 +30,7 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 	private static final AField<TileEntity, Map<Class<? extends TileEntity>, String>> classToNameMap = new AField(TileEntity.class, "classToNameMap", "field_145853_j");
 
 	public static TeleplatesSavedData get(World world){
-		TeleplatesSavedData data = (TeleplatesSavedData) world.getMapStorage().loadData(TeleplatesSavedData.class, NAME);
+		TeleplatesSavedData data = (TeleplatesSavedData) world.getMapStorage().getOrLoadData(TeleplatesSavedData.class, NAME);
 		if(data == null){
 			data = new TeleplatesSavedData(NAME);
 			world.getMapStorage().setData(NAME, data);
@@ -77,9 +77,10 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt){
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		teleplatesManager.writeToNBT(nbt);
 		consumptionManager.writeToNBT(nbt);
+		return nbt;
 	}
 
 	@Override
