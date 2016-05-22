@@ -1,7 +1,7 @@
 package code.elix_x.mods.teleplates.events;
 
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.IInternalTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.util.EnumHand;
@@ -15,7 +15,7 @@ public class BlockBreakEvent {
 		if(event.getState().getBlock() == TeleplatesBase.teleplate){
 			event.setCanceled(true);
 			if(event.getPlayer().getHeldItem(EnumHand.MAIN_HAND) != null && event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.STICK){
-				TileEntityTeleplate teleplate = (TileEntityTeleplate) event.getWorld().getTileEntity(event.getPos());
+				IInternalTeleplate teleplate = (IInternalTeleplate) event.getWorld().getTileEntity(event.getPos());
 				if(teleplate.isErrored() || teleplate.getOwner().equals(EntityPlayer.getUUID(event.getPlayer().getGameProfile()))){
 					event.setCanceled(false);
 				}

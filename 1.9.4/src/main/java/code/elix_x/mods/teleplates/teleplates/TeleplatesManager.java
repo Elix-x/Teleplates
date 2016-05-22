@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.Teleplate.EnumTeleplateMode;
-import code.elix_x.mods.teleplates.tileentity.ITeleplate;
+import code.elix_x.mods.teleplates.tileentity.IInternalTeleplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -68,7 +68,7 @@ public class TeleplatesManager {
 		}
 	}
 
-	public <T extends TileEntity & ITeleplate> void updateTeleplatePosition(T te){
+	public <T extends TileEntity & IInternalTeleplate> void updateTeleplatePosition(T te){
 		Teleplate teleplate = getTeleplate(te.getTeleplateId());
 		if(teleplate != null){
 			DimBlockPos pos = new DimBlockPos(te);

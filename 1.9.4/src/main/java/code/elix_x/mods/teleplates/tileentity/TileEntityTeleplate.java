@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEntityTeleplate>, ITickable {
+public class TileEntityTeleplate extends TileEntity implements IInternalTeleplate<TileEntityTeleplate>, ITickable {
 
 	private int teleplate;
 
@@ -49,6 +49,7 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 		this.data.put(name, data);
 	}
 
+	@Override
 	public void init(EntityPlayer player, String name){
 		if(!worldObj.isRemote){
 			teleplate = TeleplatesSavedData.get(worldObj).getTeleplatesManager().createTeleplate(player, name, new DimBlockPos(this));
@@ -77,10 +78,12 @@ public class TileEntityTeleplate extends TileEntity implements ITeleplate<TileEn
 		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().getTeleplate(teleplate);
 	}
 
+	@Override
 	public UUID getOwner(){
 		return getTeleplate().getOwner();
 	}
 
+	@Override
 	public boolean isErrored(){
 		return TeleplatesSavedData.get(worldObj).getTeleplatesManager().isErrored(teleplate);
 	}

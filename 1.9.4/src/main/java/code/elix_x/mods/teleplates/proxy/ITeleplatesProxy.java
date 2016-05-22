@@ -13,4 +13,6 @@ public interface ITeleplatesProxy extends IProxy {
 
 	public void displayGuiSelectTeleplate();
 
+	public void updateTeleplatesClass(Class clas);
+
 }

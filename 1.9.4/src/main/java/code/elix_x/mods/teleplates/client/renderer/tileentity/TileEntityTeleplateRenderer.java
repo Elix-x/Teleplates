@@ -9,7 +9,7 @@ import com.google.common.base.Throwables;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.proxy.ClientProxy;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
-import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.ITeleplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -21,7 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
-public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
+public class TileEntityTeleplateRenderer<T extends TileEntity & ITeleplate> extends TileEntitySpecialRenderer {
 
 	public static final ResourceLocation teleplate = new ResourceLocation(TeleplatesBase.MODID, "textures/teleplate.png");
 	public static final IModel teleplateObj;
@@ -46,10 +46,10 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTicks, int destroyStage){
-		renderTileEntityAt((TileEntityTeleplate) tileentity, x, y, z, partialTicks, false, true);
+		renderTileEntityAt((T) tileentity, x, y, z, partialTicks, false, true);
 	}
 
-	public void renderTileEntityAt(TileEntityTeleplate tileentity, double x, double y, double z, float f, boolean item, boolean teleportAnimation){
+	public void renderTileEntityAt(T tileentity, double x, double y, double z, float f, boolean item, boolean teleportAnimation){
 		bindTexture(teleplate);
 		GL11.glPushMatrix();
 
@@ -178,7 +178,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void renderStencil(TileEntityTeleplate tileentity, double x, double y, double z, float f, boolean teleportAnimation){
+	public void renderStencil(T tileentity, double x, double y, double z, float f, boolean teleportAnimation){
 		GL11.glPushMatrix();
 
 		if(!(teleportAnimation && TeleportationManager.isTeleporting(Minecraft.getMinecraft().thePlayer)/*&& ((tileentity.xCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posX) && tileentity.yCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posY - 1) && tileentity.zCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posZ)) || (Minecraft.getMinecraft().thePlayer.isUsingItem() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == TeleplatesBase.portableTeleplate))*/)){
@@ -195,7 +195,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void renderModel(TileEntityTeleplate tileentity, double x, double y, double z, float f, boolean teleportAnimation){
+	public void renderModel(T tileentity, double x, double y, double z, float f, boolean teleportAnimation){
 		bindTexture(teleplate);
 		GL11.glPushMatrix();
 
@@ -207,7 +207,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void renderModelTeleport(TileEntityTeleplate tileentity, double x, double y, double z, float f, boolean teleportAnimation){
+	public void renderModelTeleport(T tileentity, double x, double y, double z, float f, boolean teleportAnimation){
 		if(teleportAnimation && TeleportationManager.isTeleporting(Minecraft.getMinecraft().thePlayer) /*&& ((tileentity.xCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posX) && tileentity.yCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posY - 1) && tileentity.zCoord == Math.floor(Minecraft.getMinecraft().thePlayer.posZ)) || (Minecraft.getMinecraft().thePlayer.isUsingItem() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == TeleplatesBase.portableTeleplate))*/){
 			bindTexture(teleplate);
 			GL11.glPushMatrix();
@@ -241,7 +241,7 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 
 		phase = 1;
 		for(TileEntity te : tes){
-			if(te instanceof TileEntityTeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
+			if(te instanceof ITeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
 		}
 
 		GL11.glDepthMask(true);
@@ -254,14 +254,14 @@ public class TileEntityTeleplateRenderer extends TileEntitySpecialRenderer {
 
 		phase = 2;
 		for(TileEntity te : tes){
-			if(te instanceof TileEntityTeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
+			if(te instanceof ITeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
 		}
 
 		GL11.glDisable(GL11.GL_STENCIL_TEST);
 
 		phase = 3;
 		for(TileEntity te : tes){
-			if(te instanceof TileEntityTeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
+			if(te instanceof ITeleplate) TileEntityRendererDispatcher.instance.renderTileEntity(te, 0, 0);
 		}
 
 		GL11.glPopMatrix();

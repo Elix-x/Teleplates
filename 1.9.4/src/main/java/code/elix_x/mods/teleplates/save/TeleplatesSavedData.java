@@ -42,6 +42,8 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 			nameToClassMap.get(null).remove("Teleplate");
 
 			TileEntity.addMapping(data.clas, "Teleplate");
+			
+			TeleplatesBase.proxy.updateTeleplatesClass(data.clas);
 		}
 		return data;
 	}

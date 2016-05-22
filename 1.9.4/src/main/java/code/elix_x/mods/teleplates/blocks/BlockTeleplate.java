@@ -4,7 +4,7 @@ import code.elix_x.excore.utils.pos.DimBlockPos;
 import code.elix_x.mods.teleplates.TeleplatesBase;
 import code.elix_x.mods.teleplates.names.TeleplatesRandomName;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
-import code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate;
+import code.elix_x.mods.teleplates.tileentity.IInternalTeleplate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -39,7 +39,7 @@ public class BlockTeleplate extends Block {
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack itemstack){
 		if(entity instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer) entity;
-			((TileEntityTeleplate) world.getTileEntity(pos)).init(player, itemstack.hasDisplayName() ? itemstack.getDisplayName() : TeleplatesRandomName.next(world.rand));
+			((IInternalTeleplate) world.getTileEntity(pos)).init(player, itemstack.hasDisplayName() ? itemstack.getDisplayName() : TeleplatesRandomName.next(world.rand));
 		}
 	}
 
