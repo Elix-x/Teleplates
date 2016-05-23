@@ -34,7 +34,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 	private GuiButton teleport;
 
 	public GuiSelectTeleplate(){
-		TeleplatesManager manager = TeleplatesSavedData.get(mc.theWorld).getTeleplatesManager();
+		TeleplatesManager manager = TeleplatesSavedData.get(Minecraft.getMinecraft().theWorld).getTeleplatesManager();
 		for(Teleplate teleplate : manager.getAllTeleplates()){
 			if(manager.isValid(teleplate.getId())){
 				if(teleplate.getMode() == EnumTeleplateMode.PUBLIC){
