@@ -38,10 +38,6 @@ public class BlockTeleplate extends Block {
 		return null;
 	}
 
-	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid){
-		return false;
-	}
-
 	@Override
 	public boolean hasTileEntity(IBlockState state){
 		return true;
