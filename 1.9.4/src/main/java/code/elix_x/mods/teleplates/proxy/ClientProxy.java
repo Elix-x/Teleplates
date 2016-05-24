@@ -60,6 +60,7 @@ public class ClientProxy implements ITeleplatesProxy {
 	public void updateTeleplatesClass(Class clas){
 		ClientRegistry.bindTileEntitySpecialRenderer(clas, new TileEntityTeleplateRenderer());
 		ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(TeleplatesBase.teleplate), 0, clas);
+		//Waiting for IItemRenderer
 	}
 
 }
