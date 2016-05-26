@@ -110,14 +110,14 @@ public class TileEntityTeleplateRenderer<T extends TileEntity & ITeleplate> exte
 		case 2:
 		{
 			if(item){
-				/*if(animation){
+				if(animation){
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glTranslated(0.5, 0, 0.5);
 					GL11.glScaled(0.5, 1, 0.5);
 					int cooldown = TeleportationManager.getCooldown(Minecraft.getMinecraft().thePlayer);
 					double offset = (double) (TeleportationManager.DEFAULTCOOLDOWN - cooldown) / 100 * 3;
 					GL11.glTranslated(0, offset, 0);
-					teleplateObj.renderAll();
+					//					teleplateObj.renderAll();
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				} else {
 					GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -128,12 +128,13 @@ public class TileEntityTeleplateRenderer<T extends TileEntity & ITeleplate> exte
 
 					GL11.glStencilMask(255);
 					GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-					Tessellator tessellator = Tessellator.instance;
-					tessellator.startDrawingQuads();
-					tessellator.addVertex(0, 0, 0);
-					tessellator.addVertex(0, 0, 1);
-					tessellator.addVertex(1, 0, 1);
-					tessellator.addVertex(1, 0, 0);
+					Tessellator tessellator = Tessellator.getInstance();
+					VertexBuffer vertexBuffer = tessellator.getBuffer();
+					vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+					vertexBuffer.pos(0, 0, 0).endVertex();
+					vertexBuffer.pos(0, 0, 1).endVertex();
+					vertexBuffer.pos(1, 0, 1).endVertex();
+					vertexBuffer.pos(1, 0, 0).endVertex();
 					tessellator.draw();
 					GL11.glDepthMask(true);
 					GL11.glColorMask(true, true, true, true);
@@ -146,10 +147,10 @@ public class TileEntityTeleplateRenderer<T extends TileEntity & ITeleplate> exte
 
 					GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
-					teleplateObj.renderAll();
+					//					teleplateObj.renderAll();
 
 					GL11.glDisable(GL11.GL_STENCIL_TEST);
-				}*/
+				}
 			} else {
 				switch (phase){
 				case 0:
