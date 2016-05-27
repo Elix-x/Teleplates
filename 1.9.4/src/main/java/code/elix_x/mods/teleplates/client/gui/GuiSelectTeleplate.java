@@ -177,7 +177,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 			}
 
 			@Override
-			public void setSelected(int p_178011_1_, int p_178011_2_, int p_178011_3_) {
+			public void setSelected(int p_178011_1_, int p_178011_2_, int p_178011_3_){
 
 			}
 
