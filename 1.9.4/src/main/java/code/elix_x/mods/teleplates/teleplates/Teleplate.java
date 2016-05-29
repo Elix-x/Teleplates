@@ -6,12 +6,12 @@ import java.util.UUID;
 import code.elix_x.excore.utils.nbt.mbt.MBT;
 import code.elix_x.excore.utils.nbt.mbt.MBTBuilder;
 import code.elix_x.excore.utils.pos.DimBlockPos;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 
 public class Teleplate {
 
-	public static final MBT mbt = new MBTBuilder().addDefaultEncoders().addClassEncoder(false, true).build();
+	public static final MBT mbt = new MBTBuilder().addDefaultEncoders().add(new NBTClassEncoder(false, false, false, true)).build();
 
 	private int id;
 	private String name;
@@ -138,6 +138,16 @@ public class Teleplate {
 
 	public void removeFromList(String uuid){
 		list.remove(uuid);
+	public boolean canTeleportTo(EntityPlayer player, String password){
+		switch(mode){
+		case PUBLIC:
+			return true;
+		case PROTECTED:
+			return usingList ? whitelist == list.contains(player.getName()) : (password == null || this.password.equals(password));
+		case PRIVATE:
+			return owner.equals(EntityPlayer.getUUID(player.getGameProfile()));
+		}
+		return false;
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt){

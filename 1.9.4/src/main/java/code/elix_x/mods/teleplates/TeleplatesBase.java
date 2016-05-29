@@ -83,7 +83,7 @@ public class TeleplatesBase {
 
 					@Override
 					public void run(){
-						TeleportationManager.teleport(pair.getRight().getServerHandler().playerEntity, pair.getLeft().teleplate);
+						TeleportationManager.teleport(pair.getRight().getServerHandler().playerEntity, pair.getLeft().teleplate, pair.getLeft().password);
 					}
 
 				};

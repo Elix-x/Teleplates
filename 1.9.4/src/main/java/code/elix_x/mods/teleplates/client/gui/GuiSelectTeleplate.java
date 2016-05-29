@@ -18,7 +18,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.translation.I18n;
 
 public class GuiSelectTeleplate extends GuiScreen {
@@ -37,18 +36,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 		TeleplatesManager manager = TeleplatesSavedData.get(Minecraft.getMinecraft().theWorld).getTeleplatesManager();
 		for(Teleplate teleplate : manager.getAllTeleplates()){
 			if(manager.isValid(teleplate.getId())){
-				if(teleplate.getMode() == EnumTeleplateMode.PUBLIC){
-					teleplates.add(teleplate);
-				} else if(teleplate.getMode() == EnumTeleplateMode.PROTECTED);
-				if(teleplate.isUsingList()){
-					if(teleplate.isWhitelist() == teleplate.getList().contains(Minecraft.getMinecraft().thePlayer.getName())){
-						teleplates.add(teleplate);
-					}
-				} else {
-					teleplates.add(teleplate);
-				}
-			} else if(teleplate.getMode() == EnumTeleplateMode.PRIVATE){
-				if(teleplate.getOwner().equals(EntityPlayer.getUUID(Minecraft.getMinecraft().thePlayer.getGameProfile()))){
+				if(teleplate.canTeleportTo(Minecraft.getMinecraft().thePlayer, null)){
 					teleplates.add(teleplate);
 				}
 			}
@@ -109,7 +97,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton button){
 		if(button == teleport){
-			TeleplatesBase.net.sendToServer(new TeleportToTeleplateMessage(teleplates.get(selected).getId()));
+			TeleplatesBase.net.sendToServer(new TeleportToTeleplateMessage(teleplates.get(selected).getId(), password.getText()));
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();
 		}
@@ -117,7 +105,7 @@ public class GuiSelectTeleplate extends GuiScreen {
 
 	public class GuiTeleplatesList extends GuiListExtended {
 
-		public GuiTeleplatesList(Minecraft minecraft, int width, int height, int top,int bottom, int slot) {
+		public GuiTeleplatesList(Minecraft minecraft, int width, int height, int top,int bottom, int slot){
 			super(minecraft, width, height, top, bottom, slot);
 		}
 

@@ -60,16 +60,20 @@ public class TeleportationManager {
 		}
 	}
 
-	public static void teleport(EntityPlayer player, int teleplateId){
+	public static void teleport(EntityPlayer player, int teleplateId, String password){
 		if(player != null){
-			TeleplatesSavedData.get(player.worldObj).getConsumptionManager().onTransfer(player);
 			Teleplate teleplate = TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().getTeleplate(teleplateId);
-			if(player.worldObj.provider.getDimension() != teleplate.getPos().getDimId()){
-				player.changeDimension(teleplate.getPos().getDimId());
+			if(TeleplatesSavedData.get(player.worldObj).getTeleplatesManager().isValid(teleplateId)){
+				if(teleplate.canTeleportTo(player, password)){			
+					TeleplatesSavedData.get(player.worldObj).getConsumptionManager().onTransfer(player);
+					if(player.worldObj.provider.getDimension() != teleplate.getPos().getDimId()){
+						player.changeDimension(teleplate.getPos().getDimId());
+					}
+					player.rotationPitch = -90;
+					player.setPositionAndUpdate(teleplate.getPos().getX() + 0.5, teleplate.getPos().getY(), teleplate.getPos().getZ() + 0.5);
+					player.rotationPitch = -90;
+				}
 			}
-			player.rotationPitch = -90;
-			player.setPositionAndUpdate(teleplate.getPos().getX() + 0.5, teleplate.getPos().getY(), teleplate.getPos().getZ() + 0.5);
-			player.rotationPitch = -90;
 		}
 	}
 }
