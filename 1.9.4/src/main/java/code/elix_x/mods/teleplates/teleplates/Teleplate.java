@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import code.elix_x.excore.utils.nbt.mbt.MBT;
 import code.elix_x.excore.utils.nbt.mbt.MBTBuilder;
+import code.elix_x.excore.utils.nbt.mbt.encoders.NBTClassEncoder;
 import code.elix_x.excore.utils.pos.DimBlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,7 +58,7 @@ public class Teleplate {
 		this.password = password;
 	}
 
-	public Teleplate(int id, String name, DimBlockPos pos, UUID owner, boolean whitelist, Set<String> list) {
+	public Teleplate(int id, String name, DimBlockPos pos, UUID owner, boolean whitelist, Set<String> list){
 		this.id = id;
 		this.name = name;
 		this.pos = pos;
@@ -132,12 +133,14 @@ public class Teleplate {
 		this.list = list;
 	}
 
-	public void addToList(String uuid){
-		list.add(uuid);
+	public void addToList(String name){
+		list.add(name);
 	}
 
-	public void removeFromList(String uuid){
-		list.remove(uuid);
+	public void removeFromList(String name){
+		list.remove(name);
+	}
+
 	public boolean canTeleportTo(EntityPlayer player, String password){
 		switch(mode){
 		case PUBLIC:
@@ -156,21 +159,6 @@ public class Teleplate {
 
 	public static Teleplate createFromNBT(NBTTagCompound nbt){
 		return mbt.fromNBT(nbt, Teleplate.class);
-	}
-
-	@Deprecated
-	public static Teleplate createFromNBTOld(NBTTagCompound nbt){
-		return new Teleplate(nbt.getInteger("id"), nbt.getString("name"), DimBlockPos.createFromNBT(nbt), null).readPermissionsFromNBTOld(nbt);
-	}
-
-	@Deprecated
-	public Teleplate readPermissionsFromNBTOld(NBTTagCompound nbt){
-		NBTTagList list = (NBTTagList) nbt.getTag("permissions");
-		for(int i = 0; i < list.tagCount(); i++){
-			NBTTagCompound tag = list.getCompoundTagAt(i);
-			if(tag.getInteger("level") == 4) owner = UUID.fromString(tag.getString("uuid"));
-		}
-		return this;
 	}
 
 	@Override
