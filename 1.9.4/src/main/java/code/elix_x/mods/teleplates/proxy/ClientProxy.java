@@ -30,6 +30,7 @@ public class ClientProxy implements ITeleplatesProxy {
 
 	@Override
 	public void init(FMLInitializationEvent event){
+		Minecraft.getMinecraft().getFramebuffer().enableStencil();
 		OBJLoader.INSTANCE.addDomain(TeleplatesBase.MODID);
 		//		if(teleplateRendererVersion == 2) MinecraftForge.EVENT_BUS.register(new LastRenderWorldEvent());
 	}
@@ -42,7 +43,7 @@ public class ClientProxy implements ITeleplatesProxy {
 	@Override
 	public void config(Configuration config){
 		forceDisplayCoordinatesInGui = config.getBoolean("forceDisplayCoordinatesInGui", "Client", false, "Force to display teleplate coordinates in teleportation gui.");
-		teleplateRendererVersion = config.getInt("Teleplate Renderer Version", "Client", 2, 0, 2, "Version of renderer to render teleplates. Higher versions, may consume more FPS.\n0 - Like in 1.0, but static.\n1 - Like in 1.0\n2 - One that came in 1.2.4");
+		teleplateRendererVersion = config.getInt("Teleplate Renderer Version", "Client", Minecraft.getMinecraft().getFramebuffer().isStencilEnabled() ? 2 : 1, 0, Minecraft.getMinecraft().getFramebuffer().isStencilEnabled() ? 2 : 1, "Version of renderer to render teleplates. Higher versions, may consume more FPS.\n0 - Like in 1.0, but static.\n1 - Like in 1.0\n2 - One that came in 1.2.4");
 		teleplateRendererVersion = 1;
 	}
 
