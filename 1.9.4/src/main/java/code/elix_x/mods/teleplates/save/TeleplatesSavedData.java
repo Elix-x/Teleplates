@@ -5,10 +5,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AConstructor;
 import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AField;
 import code.elix_x.mods.teleplates.TeleplatesBase;
-import code.elix_x.mods.teleplates.clas.TeleplatesAltClassLoader;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.consumption.ConsumptionManager;
 import code.elix_x.mods.teleplates.net.SynchronizeTeleplatesMessage;
@@ -35,22 +33,8 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 			data = new TeleplatesSavedData(NAME);
 			world.getMapStorage().setData(NAME, data);
 		}
-		if(data.clas == null){
-			data.clas = new TeleplatesAltClassLoader(TeleplatesSavedData.class.getClassLoader(), data.consumptionManager).genTeleplateClass("code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate");
-			data.constr = new AConstructor(data.clas);
-
-			nameToClassMap.get(null).remove("Teleplate");
-
-			TileEntity.addMapping(data.clas, "Teleplate");
-			
-			TeleplatesBase.proxy.updateTeleplatesClass(data.clas);
-		}
 		return data;
 	}
-
-	public Class<T> clas;
-
-	private AConstructor<T> constr;
 
 	private TeleplatesManager teleplatesManager = new TeleplatesManager(this);
 
@@ -58,10 +42,6 @@ public class TeleplatesSavedData<T extends TileEntity & ITeleplate> extends Worl
 
 	public TeleplatesSavedData(String name){
 		super(name);
-	}
-
-	public T newInstance(){
-		return constr.newInstance();
 	}
 
 	public TeleplatesManager getTeleplatesManager(){
