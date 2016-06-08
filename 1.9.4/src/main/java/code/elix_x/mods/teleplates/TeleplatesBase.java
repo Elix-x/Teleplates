@@ -8,7 +8,10 @@ import com.google.common.base.Function;
 
 import code.elix_x.excore.EXCore;
 import code.elix_x.excore.utils.packets.SmartNetworkWrapper;
+import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AClass;
+import code.elix_x.excore.utils.reflection.AdvancedReflectionHelper.AConstructor;
 import code.elix_x.mods.teleplates.blocks.BlockTeleplate;
+import code.elix_x.mods.teleplates.clas.TeleplatesAltClassLoader;
 import code.elix_x.mods.teleplates.config.ConfigurationManager;
 import code.elix_x.mods.teleplates.events.BlockBreakEvent;
 import code.elix_x.mods.teleplates.events.OnPlayerJoinEvent;
@@ -21,14 +24,17 @@ import code.elix_x.mods.teleplates.net.TeleportToTeleplateMessage;
 import code.elix_x.mods.teleplates.proxy.ITeleplatesProxy;
 import code.elix_x.mods.teleplates.save.TeleplatesSavedData;
 import code.elix_x.mods.teleplates.teleplates.TeleportationManager;
+import code.elix_x.mods.teleplates.tileentity.IInternalTeleplate;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -38,13 +44,16 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = TeleplatesBase.MODID, name = TeleplatesBase.NAME, version = TeleplatesBase.VERSION, dependencies = "required-after:" + EXCore.DEPENDENCY, acceptedMinecraftVersions = EXCore.MCVERSION)
-public class TeleplatesBase {
+public class TeleplatesBase<T extends TileEntity & IInternalTeleplate> {
 
 	public static final String MODID = "teleplates";
 	public static final String NAME = "Teleplates";
 	public static final String VERSION = "1.2.7";
 
 	public static final Logger logger = LogManager.getLogger(NAME);
+	
+	@Instance(MODID)
+	public static TeleplatesBase instance;
 
 	@SidedProxy(modId = MODID, clientSide = "code.elix_x.mods.teleplates.proxy.ClientProxy", serverSide = "code.elix_x.mods.teleplates.proxy.CommonProxy")
 	public static ITeleplatesProxy proxy;
@@ -53,6 +62,9 @@ public class TeleplatesBase {
 
 	public static Block teleplate;
 
+	public AClass<T> teleplateTEClass;
+	public AConstructor<T> teleplateTEConstructor;
+	
 	//TODO
 	public static Item portableTeleplate;
 
@@ -123,6 +135,14 @@ public class TeleplatesBase {
 
 		teleplate = new BlockTeleplate().setRegistryName(MODID, "teleplate");
 		GameRegistry.register(teleplate);
+		
+		teleplateTEClass = new TeleplatesAltClassLoader(TeleplatesSavedData.class.getClassLoader(), data.consumptionManager).genTeleplateClass("code.elix_x.mods.teleplates.tileentity.TileEntityTeleplate");
+		teleplateTEConstructor = new AConstructor(clas);
+
+		TileEntity.addMapping(data.clas, "Teleplate");
+		
+		TeleplatesBase.proxy.updateTeleplatesClass(data.clas);
+		
 		GameRegistry.register(new ItemBlock(teleplate).setCreativeTab(CreativeTabs.TRANSPORTATION).setRegistryName(MODID, "teleplate"));
 
 		ConfigurationManager.preInit(event);
